@@ -91,3 +91,7 @@ section[data-dark] .eyebrow {
     transform: translateY(0);
   }
 }
+
+#sobre-mim {
+  scroll-margin-top: var(--navbar-height, 0px);
+}

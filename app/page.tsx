@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Agenda from "@/components/Agenda";
 import Header from "@/components/Header";
+import Navbar from "@/components/Navbar";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const links = [
   { href: "#sobre-mim", label: "Sobre mim" },
@@ -36,30 +38,14 @@ export default function Home() {
   return (
     <>
       <Header />
-
-      <nav
-        aria-label="Navegação principal"
-        className="sticky top-0 z-30 border-b border-white/10 bg-[#1013129b]/95 backdrop-blur-md"
-      >
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-1 px-4 py-[1.5rem] sm:gap-x-8">
-          {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={`rounded-md px-1 py-2 text-sm font-semibold transition-colors hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand ${link.href === "#horarios" ? "text-brand" : "text-white/80"}`}
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-      </nav>
+      <Navbar />
 
       <main id="conteudo">
-        <section
+        <ScrollReveal
           id="sobre-mim"
           data-dark
           aria-labelledby="titulo-sobre"
-          className="section-anchor bg-[#101312] text-white"
+          className="relative section-anchor bg-[#101312] text-white min-h-[calc(100dvh-var(--navbar-height,0px))] flex items-center z-0"
         >
           <div className="section-container grid items-center gap-10 md:grid-cols-2 md:gap-16">
             <div>
@@ -105,12 +91,12 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section
+        <ScrollReveal
           id="trabalhos"
           aria-labelledby="titulo-trabalhos"
-          className="section-anchor bg-[#f6f8f7]"
+          className="relative section-anchor bg-[#f6f8f7] z-10 min-h-[calc(100dvh-var(--navbar-height,0px))]  flex items-center "
         >
           <div className="section-container">
             <p className="eyebrow">Trabalhos</p>
@@ -138,7 +124,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
+        </ScrollReveal>
 
         <section
           id="galeria"
