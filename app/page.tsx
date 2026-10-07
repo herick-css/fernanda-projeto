@@ -3,6 +3,9 @@ import Agenda from "@/components/Agenda";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
+import TrabalhosGrid from "@/components/TrabalhosGrid";
+import FotoFernanda from "@/components/FotoFernanda";
+import BokehBackground from "@/components/BokehBackground";
 
 const links = [
   { href: "#sobre-mim", label: "Sobre mim" },
@@ -39,59 +42,57 @@ export default function Home() {
     <>
       <Header />
       <Navbar />
-
       <main id="conteudo">
-        <ScrollReveal
+        <section
           id="sobre-mim"
           data-dark
           aria-labelledby="titulo-sobre"
-          className="relative section-anchor bg-[#101312] text-white min-h-[calc(100dvh-var(--navbar-height,0px))] flex items-center z-0"
+          className="relative isolate z-0 section-anchor bg-[#101312] text-white"
         >
-          <div className="section-container grid items-center gap-10 md:grid-cols-2 md:gap-16">
-            <div>
-              <p className="eyebrow">Sobre mim</p>
-              <h1
-                id="titulo-sobre"
-                className="mt-4 text-4xl font-bold leading-tight tracking-tight sm:text-5xl"
-              >
-                Seu movimento.
-                <br />
-                <span className="text-brand">Seu próximo passo.</span>
-              </h1>
-              <p className="mt-6 text-lg font-semibold">
-                Fernanda Bezerra · Personal Trainer
-              </p>
-              <p className="mt-4 max-w-lg leading-relaxed text-white/65">
-                Treinamento personalizado com atenção aos seus objetivos e à sua
-                rotina. Conheça meu trabalho e consulte os horários para
-                conversarmos sobre seu próximo passo.
-              </p>
-              <p className="mt-4 text-sm text-white/45">
-                Biografia, formação e CREF serão adicionados aqui.
-              </p>
-              <a
-                href="#horarios"
-                className="mt-8 inline-flex rounded-lg bg-brand px-6 py-3 font-bold text-black transition hover:bg-brand-light focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
-              >
-                Consultar horários{" "}
-                <span aria-hidden="true" className="ml-3">
-                  ↗
-                </span>
-              </a>
-            </div>
-            <div className="flex aspect-[4/3] items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
+          <BokehBackground />
+
+          <ScrollReveal
+            id="sobre-mim-conteudo"
+            className="relative z-10 min-h-[calc(100dvh-var(--navbar-height,0px))] flex items-center"
+          >
+            <div className="section-container w-full grid items-center gap-10 md:grid-cols-2 md:gap-16">
               <div>
-                <span
-                  aria-hidden="true"
-                  className="text-5xl font-black tracking-tighter text-brand/30"
+                <p className="eyebrow">Sobre mim</p>
+
+                <h1
+                  id="titulo-sobre"
+                  className="mt-4 text-4xl font-bold leading-tight tracking-tight sm:text-5xl"
                 >
-                  FB
-                </span>
-                <p className="mt-4 text-sm text-white/45">Foto da Fernanda</p>
+                  Seu movimento.
+                  <br />
+                  <span className="text-brand">Seu próximo passo.</span>
+                </h1>
+                <p className="mt-6 text-lg font-semibold">
+                  Fernanda Bezerra · Personal Trainer
+                </p>
+                <p className="mt-4 max-w-lg leading-relaxed text-white/65">
+                  Treinamento personalizado com atenção aos seus objetivos e à
+                  sua rotina. Conheça meu trabalho e consulte os horários para
+                  conversarmos sobre seu próximo passo.
+                </p>
+                <p className="mt-4 text-sm text-white/45">
+                  Biografia, formação e CREF serão adicionados aqui.
+                </p>
+                <a
+                  href="#horarios"
+                  className="mt-8 inline-flex rounded-lg bg-brand px-6 py-3 font-bold text-black transition hover:bg-brand-light focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+                >
+                  Consultar horários{" "}
+                  <span aria-hidden="true" className="ml-3">
+                    ↗
+                  </span>
+                </a>
               </div>
+
+              <FotoFernanda />
             </div>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
+        </section>
 
         <ScrollReveal
           id="trabalhos"
@@ -107,22 +108,7 @@ export default function Home() {
               Uma apresentação inicial dos serviços. As modalidades serão
               ajustadas aos atendimentos oferecidos pela Fernanda.
             </p>
-            <div className="mt-10 grid gap-5 md:grid-cols-3">
-              {trabalhos.map((item) => (
-                <article
-                  key={item.numero}
-                  className="rounded-2xl border border-black/10 bg-white p-7 transition duration-300 hover:-translate-y-1 hover:border-brand hover:shadow-lg"
-                >
-                  <span className="text-sm font-bold text-emerald-700">
-                    {item.numero}
-                  </span>
-                  <h3 className="mt-6 text-xl font-bold">{item.titulo}</h3>
-                  <p className="mt-3 leading-relaxed text-slate-600">
-                    {item.texto}
-                  </p>
-                </article>
-              ))}
-            </div>
+            <TrabalhosGrid trabalhos={trabalhos} />
           </div>
         </ScrollReveal>
 

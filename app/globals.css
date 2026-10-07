@@ -8,25 +8,29 @@
 html {
   scroll-behavior: smooth;
 }
+
 body {
   margin: 0;
 }
 
-/* Compensa o menu fixo quando uma âncora é acessada. */
+/* Compensa a altura real do navbar em todas as âncoras. */
 .section-anchor {
-  scroll-margin-top: 8rem;
+  scroll-margin-top: var(--navbar-height, 0px);
 }
 
 @layer components {
   .section-container {
     @apply mx-auto max-w-6xl px-6 py-16 sm:py-20;
   }
+
   .eyebrow {
     @apply text-xs font-bold uppercase tracking-[0.2em] text-emerald-700;
   }
+
   .section-title {
     @apply mt-4 text-3xl font-bold tracking-tight sm:text-4xl;
   }
+
   .section-description {
     @apply mt-4 max-w-2xl leading-relaxed text-slate-600;
   }
@@ -47,25 +51,9 @@ section[data-dark] .eyebrow {
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
 }
+
 .skip-link:focus {
   transform: translateY(0);
-}
-
-@media (min-width: 640px) {
-  .section-anchor {
-    scroll-margin-top: 6rem;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
 }
 
 .video-placeholder {
@@ -74,24 +62,71 @@ section[data-dark] .eyebrow {
     radial-gradient(ellipse at 90% 90%, #08e5b11a, transparent 50%);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .section-container {
-    animation: appear 650ms ease-out both;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
 
-@keyframes appear {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
+.bokeh-light {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--color-brand-light) 0%,
+    var(--color-brand) 35%,
+    transparent 70%
+  );
+  filter: blur(35px);
+  opacity: 0.12;
+  animation: bokeh-float 18s ease-in-out infinite alternate;
+}
+
+@keyframes bokeh-float {
+  0% {
+    transform: translate(-100px, -70px) scale(0.9);
+    opacity: 0.08;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  50% {
+    transform: translate(80px, -30px) scale(1.1);
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: translate(140px, 100px) scale(1.15);
+    opacity: 0.18;
   }
 }
 
-#sobre-mim {
-  scroll-margin-top: var(--navbar-height, 0px);
+@media (prefers-reduced-motion: reduce) {
+  .bokeh-light {
+    animation: none;
+  }
+}
+
+.bokeh-mouse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--color-brand-light),
+    var(--color-brand) 35%,
+    transparent 70%
+  );
+  filter: blur(35px);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  will-change: transform;
 }
