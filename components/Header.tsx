@@ -29,7 +29,6 @@ export default function Header() {
     let paddingTopo = 0;
     let paddingFim = 0;
 
-    // Executado inicialmente e quando as dimensões mudam.
     function medir() {
       const estilo = getComputedStyle(header);
 
@@ -52,7 +51,6 @@ export default function Header() {
         medir();
       }
 
-      // Uma leitura de posição por atualização.
       const { top } = header.getBoundingClientRect();
       const origem = top + bordaTopo;
 
@@ -72,7 +70,6 @@ export default function Header() {
         Math.max(paddingTopo, posicaoCentral),
       );
 
-      // O blur começa quando o conteúdo alcança o limite inferior.
       const progressoBlur = Math.min(
         1,
         Math.max(
@@ -88,13 +85,11 @@ export default function Header() {
         Math.max(0, -top / Math.max(1, alturaTotalHeader)),
       );
 
-      // Escritas ficam depois das leituras.
       conteudo.style.transform = `translateY(${posicao}px)`;
       sombra.style.opacity = String(Math.min(0.9, progresso * 1.8));
     }
 
     function agendarAtualizacao() {
-      // Evita vários agendamentos antes do mesmo frame.
       if (!visivel || frame !== null) return;
 
       frame = window.requestAnimationFrame(() => {
@@ -185,17 +180,14 @@ export default function Header() {
         className="absolute inset-x-6 top-0 z-20 mx-auto max-w-xl transition-none will-change-transform"
       >
         <div className="flex flex-col items-center gap-5 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)]">
-          <Image
-            src="/images/logo-fernanda.svg"
-            alt="Fernanda Bezerra — Personal Trainer"
-            width={520}
-            height={138}
-            preload
-            className="h-auto w-full max-w-[420px]"
-          />
+          <h2 className="fontsize">
+            FERNANDA
+            <br />
+            BEZERRA
+          </h2>
 
           <p className="text-xs tracking-[0.18em] text-white/60 sm:text-sm">
-            Transformando hábitos saudáveis em rotina
+            Transformando maus hábitos em qualidade de vida
           </p>
         </div>
       </div>
