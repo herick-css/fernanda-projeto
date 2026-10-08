@@ -40,8 +40,8 @@ const trabalhos = [
 export default function Home() {
   return (
     <>
-      <Header />
       <Navbar />
+      <Header />
       <main id="conteudo">
         <section
           id="sobre-mim"

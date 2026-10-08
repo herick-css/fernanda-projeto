@@ -179,14 +179,14 @@ export default function Header() {
         ref={conteudoRef}
         className="absolute inset-x-6 top-0 z-20 mx-auto max-w-xl transition-none will-change-transform"
       >
-        <div className="flex flex-col items-center gap-5 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)]">
-          <h2 className="fontsize">
-            FERNANDA
+        <div className="flex flex-col  gap-5 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)]">
+          <h2 className="text-[48px] font-bold text-left color-">
+            <span className="text-white">FERNANDA</span>
             <br />
-            BEZERRA
+            <span className="text-[#08e5b1]">BEZERRA</span>
           </h2>
 
-          <p className="text-xs tracking-[0.18em] text-white/60 sm:text-sm">
+          <p className="text-xs tracking-[0.18em] text-white/60 sm:text-sm text-left">
             Transformando maus hábitos em qualidade de vida
           </p>
         </div>
