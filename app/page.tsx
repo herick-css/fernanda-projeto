@@ -49,7 +49,7 @@ export default function Home() {
           id="sobre-mim"
           data-dark
           aria-labelledby="titulo-sobre"
-          className="relative isolate z-0 section-anchor bg-[#101312] text-white"
+          className="relative isolate z-0 section-anchor overflow-x-clip bg-[#101312] text-white"
         >
           <BokehBackground />
 

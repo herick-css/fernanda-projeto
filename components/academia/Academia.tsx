@@ -7,10 +7,7 @@ import { ESTACOES } from "./dados";
 const AcademiaCena = dynamic(() => import("./AcademiaCena"), {
   ssr: false,
   loading: () => (
-    <div
-      className="h-[min(88vh,820px)] min-h-[560px] w-full"
-      aria-hidden="true"
-    />
+    <div className="h-[min(88vh,820px)] min-h-140 w-full" aria-hidden="true" />
   ),
 });
 

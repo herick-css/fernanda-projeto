@@ -13,6 +13,8 @@ export type Estacao = {
   lado: "dir" | "esq";
   /** raio do anel de destaque no chão */
   raio: number;
+  /** deslocamento [x, z] do anel em relação ao centro (para centralizar no equipamento) */
+  anel?: [number, number];
 };
 
 // Textos iguais aos dos cards atuais. Para editar, mexa só aqui.
@@ -38,6 +40,7 @@ export const ESTACOES: Estacao[] = [
     marcador: [1.2, 2.9, -1.3],
     lado: "esq",
     raio: 1.9,
+    anel: [-0.8, 0], // a esteira fica 0,8 à esquerda do centro da estação
   },
   {
     id: "evolucao",

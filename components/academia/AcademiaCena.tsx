@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type MutableRefObject,
   type RefObject,
   type ReactNode,
@@ -107,8 +108,8 @@ function Supino({ barra }: { barra: RefGrupo }) {
   return (
     <>
       {/* banco (comprido o bastante para a boneca deitar) */}
-      <Caixa p={[0, 0.45, 0.1]} s={[0.5, 0.12, 2.1]} c={COR.verdeEscuro} />
-      <Caixa p={[0, 0.2, -0.55]} s={[0.4, 0.4, 0.08]} c={COR.escuro} />
+      <Caixa p={[0, 0.45, 0]} s={[0.5, 0.12, 2.3]} c={COR.verdeEscuro} />
+      <Caixa p={[0, 0.2, -0.7]} s={[0.4, 0.4, 0.08]} c={COR.escuro} />
       <Caixa p={[0, 0.2, 0.95]} s={[0.4, 0.4, 0.08]} c={COR.escuro} />
 
       {/* suportes */}
@@ -212,18 +213,45 @@ function Esteira({ faixas }: { faixas: RefGrupo }) {
 
 const PRETO = "#0b0f14";
 
-// mechas do cabelo cacheado preso no alto: [posição, raio, cor]
-const CACHOS: { p: V3; r: number; c: string }[] = [
-  { p: [0, 2.12, -0.1], r: 0.3, c: "#6b1230" },
-  { p: [0.24, 2.02, -0.08], r: 0.2, c: "#9f1239" },
-  { p: [-0.24, 2.02, -0.08], r: 0.2, c: "#9f1239" },
-  { p: [0, 2.38, -0.08], r: 0.2, c: "#9f1239" },
-  { p: [0.16, 2.3, -0.2], r: 0.17, c: "#7f1d3a" },
-  { p: [-0.16, 2.3, -0.2], r: 0.17, c: "#7f1d3a" },
-  { p: [0, 2.0, -0.26], r: 0.22, c: "#7f1d3a" },
-  { p: [0.2, 1.84, -0.24], r: 0.16, c: "#9f1239" },
-  { p: [-0.2, 1.84, -0.24], r: 0.16, c: "#9f1239" },
-];
+// Cabelo cacheado preso no alto, em cubinhos levemente girados (estilo blocos).
+// Cada mecha: posição, tamanho do lado, rotação e cor.
+const CACHOS: { p: V3; l: number; rot: V3; c: string }[] = (() => {
+  const tons = ["#6b1230", "#7f1d3a", "#9f1239", "#b0173f"];
+  const out: { p: V3; l: number; rot: V3; c: string }[] = [];
+  let n = 0;
+  const add = (x: number, y: number, z: number, l: number) => {
+    out.push({
+      p: [x, y, z],
+      l,
+      rot: [0.5 * Math.sin(n * 2.1), 0.7 * Math.cos(n * 1.3), 0.4 * Math.sin(n * 3.1)],
+      c: tons[n % tons.length],
+    });
+    n++;
+  };
+
+  // volume do rabo de cavalo alto (anel + topo)
+  for (let k = 0; k < 8; k++) {
+    const a = (k / 8) * Math.PI * 2;
+    add(Math.cos(a) * 0.2, 2.5 + Math.sin(k * 1.7) * 0.07, Math.sin(a) * 0.2 - 0.12, 0.26);
+  }
+  add(0, 2.76, -0.12, 0.32);
+  add(0.14, 2.64, -0.22, 0.24);
+  add(-0.14, 2.64, -0.02, 0.24);
+  add(0, 2.38, -0.12, 0.3);
+
+  // cascata de cachos caindo para trás/direita
+  for (let k = 0; k < 5; k++) add(0.22 + k * 0.08, 2.36 - k * 0.14, -0.2 - k * 0.02, 0.22 - k * 0.012);
+
+  // franja de cubinhos na linha do cabelo
+  for (let k = -2; k <= 2; k++) add(k * 0.11, 2.23 - Math.abs(k) * 0.015, 0.22, 0.12);
+
+  // cachos soltos dos dois lados
+  for (const lado of [-1, 1]) {
+    for (let k = 0; k < 3; k++) add(lado * (0.32 + 0.01 * k), 2.0 - 0.15 * k, -0.02 - k * 0.04, 0.14 - 0.015 * k);
+  }
+  return out;
+})();
+
 
 /* ------------------------------------------------------------------ */
 /* Boneca articulada (PLACEHOLDER das animações)                       */
@@ -268,15 +296,19 @@ function BracoArt({
   refHalter: (g: THREE.Group | null) => void;
 }) {
   return (
-    <group ref={refOmbro} position={[lado * 0.31, 1.52, 0]}>
-      <Caixa p={[0, -0.17, 0]} s={[0.12, 0.34, 0.14]} c={COR.pele} />
-      <Caixa p={[0, -0.09, 0]} s={[0.17, 0.2, 0.18]} c={PRETO} />
+    <group ref={refOmbro} position={[lado * 0.32, 1.52, 0]}>
+      <Caixa p={[0, -0.17, 0]} s={[0.14, 0.34, 0.16]} c={COR.pele} />
+      {/* manga da camiseta */}
+      <Caixa p={[0, -0.09, 0]} s={[0.19, 0.2, 0.2]} c={PRETO} />
       <group ref={refCotovelo} position={[0, -0.34, 0]}>
-        <Caixa p={[0, -0.15, 0]} s={[0.11, 0.3, 0.13]} c={COR.pele} />
+        <Caixa p={[0, -0.15, 0]} s={[0.12, 0.3, 0.14]} c={COR.pele} />
         {tatuagem && (
-          <Caixa p={[0, -0.15, 0]} s={[0.125, 0.2, 0.145]} c="#4b5563" />
+          <>
+            <Caixa p={[0, -0.14, 0]} s={[0.135, 0.2, 0.155]} c="#3f3f46" />
+            <Caixa p={[0, -0.14, 0]} s={[0.142, 0.08, 0.162]} c="#18181b" />
+          </>
         )}
-        <Caixa p={[0, -0.33, 0]} s={[0.1, 0.1, 0.1]} c={COR.pele} />
+        <Caixa p={[0, -0.33, 0]} s={[0.11, 0.11, 0.11]} c={COR.pele} />
         <group ref={refHalter} position={[0, -0.33, 0]} visible={false}>
           <Halter p={[0, 0, 0]} carga={0.4} />
         </group>
@@ -285,6 +317,7 @@ function BracoArt({
   );
 }
 
+// perna grossa (coxa de atleta), short colado e tênis preto com sola branca
 function PernaArt({
   lado,
   refQuadril,
@@ -295,13 +328,59 @@ function PernaArt({
   refJoelho: (g: THREE.Group | null) => void;
 }) {
   return (
-    <group ref={refQuadril} position={[lado * 0.13, 0.66, 0]}>
-      <Caixa p={[0, -0.16, 0]} s={[0.16, 0.32, 0.18]} c={COR.pele} />
+    <group ref={refQuadril} position={[lado * 0.14, 0.66, 0]}>
+      <Caixa p={[0, -0.17, 0]} s={[0.2, 0.34, 0.22]} c={COR.pele} />
+      <Caixa p={[0, -0.06, 0]} s={[0.23, 0.2, 0.25]} c={PRETO} />
       <group ref={refJoelho} position={[0, -0.32, 0]}>
-        <Caixa p={[0, -0.14, 0]} s={[0.15, 0.28, 0.17]} c={COR.pele} />
-        <Caixa p={[0, -0.3, 0.04]} s={[0.17, 0.08, 0.3]} c={PRETO} />
+        <Caixa p={[0, -0.14, 0]} s={[0.16, 0.28, 0.18]} c={COR.pele} />
+        <Caixa p={[0, -0.275, 0.04]} s={[0.2, 0.07, 0.32]} c={PRETO} />
+        <Caixa p={[0, -0.32, 0.04]} s={[0.21, 0.04, 0.33]} c="#f8fafc" />
       </group>
     </group>
+  );
+}
+
+// cabeça grande e quadrada (estilo blocos): rosto reto, olhos retangulares,
+// sobrancelhas grossas, batom vermelho e cabelo em cubinhos
+function Cabeca() {
+  return (
+    <>
+      {/* pescoço e cabeça (cubo) */}
+      <Caixa p={[0, 1.65, 0]} s={[0.15, 0.1, 0.15]} c={COR.pele} />
+      <Caixa p={[0, 1.95, 0]} s={[0.56, 0.54, 0.5]} c={COR.pele} />
+      {/* orelhas */}
+      {[-1, 1].map((l) => (
+        <Caixa key={l} p={[l * 0.3, 1.93, 0]} s={[0.05, 0.12, 0.1]} c="#b97854" />
+      ))}
+
+      {/* olhos retangulares pretos com brilho, cílios e sobrancelha grossa */}
+      {[-1, 1].map((l) => (
+        <group key={l}>
+          <Caixa p={[l * 0.14, 1.96, 0.255]} s={[0.1, 0.12, 0.02]} c="#0a0a10" />
+          <Caixa p={[l * 0.115, 1.995, 0.267]} s={[0.03, 0.03, 0.01]} c="#ffffff" />
+          <Caixa p={[l * 0.205, 2.015, 0.255]} s={[0.05, 0.02, 0.02]} c="#0a0a10" rot={[0, 0, l * 0.5]} />
+          <Caixa p={[l * 0.14, 2.1, 0.258]} s={[0.17, 0.045, 0.025]} c="#3b1d14" rot={[0, 0, l * -0.12]} />
+        </group>
+      ))}
+
+      {/* bochechas */}
+      {[-1, 1].map((l) => (
+        <Caixa key={l} p={[l * 0.2, 1.83, 0.255]} s={[0.08, 0.05, 0.01]} c="#e2967f" />
+      ))}
+
+      {/* cabelo: topo, fundo e laterais em blocos */}
+      <Caixa p={[0, 2.26, -0.02]} s={[0.62, 0.14, 0.56]} c="#4a0f26" />
+      <Caixa p={[0, 2.0, -0.28]} s={[0.62, 0.46, 0.12]} c="#4a0f26" />
+      {[-1, 1].map((l) => (
+        <Caixa key={l} p={[l * 0.31, 2.1, -0.04]} s={[0.1, 0.34, 0.44]} c="#4a0f26" />
+      ))}
+      {CACHOS.map((cacho, i) => (
+        <mesh key={i} position={cacho.p} rotation={cacho.rot}>
+          <boxGeometry args={[cacho.l, cacho.l, cacho.l]} />
+          <Mat c={cacho.c} />
+        </mesh>
+      ))}
+    </>
   );
 }
 
@@ -452,6 +531,8 @@ function Boneca({
     }
     if (g.pivo) g.pivo.rotation.x = -(Math.PI / 2) * wSup;
     if (g.tronco) g.tronco.rotation.x = 0.18 * wCor + 0.05 * wAnd;
+    // deitada: a cabeça levanta um pouco, para a nuca não afundar no banco
+    if (g.cabeca) g.cabeca.rotation.x = 0.4 * wSup;
 
     // --- pernas ---
     const sp = Math.sin(t * 7) * wAnd * 0.55 + Math.sin(t * 11) * wCor * 0.95;
@@ -518,15 +599,15 @@ function Boneca({
             refQuadril={set("quadrilD")}
             refJoelho={set("joelhoD")}
           />
-          <Caixa p={[0, 0.78, 0]} s={[0.54, 0.34, 0.32]} c={PRETO} />
+          <Caixa p={[0, 0.76, 0]} s={[0.6, 0.3, 0.36]} c={PRETO} />
 
           {/* tronco, braços e cabeça (inclina a partir do quadril) */}
           <group ref={set("tronco")} position={[0, 0.78, 0]}>
             <group position={[0, -0.78, 0]}>
-              {/* camiseta preta + colar */}
-              <Caixa p={[0, 1.25, 0]} s={[0.52, 0.7, 0.3]} c={PRETO} />
-              <Caixa p={[0, 1.56, 0.155]} s={[0.14, 0.02, 0.01]} c="#f59e0b" />
-              <Caixa p={[0, 1.5, 0.16]} s={[0.04, 0.07, 0.02]} c="#f59e0b" />
+              {/* camiseta preta + colar dourado */}
+              <Caixa p={[0, 1.25, 0]} s={[0.54, 0.7, 0.32]} c={PRETO} />
+              <Caixa p={[0, 1.56, 0.165]} s={[0.16, 0.02, 0.01]} c="#f59e0b" />
+              <Caixa p={[0, 1.5, 0.17]} s={[0.05, 0.08, 0.02]} c="#f59e0b" />
 
               <BracoArt
                 lado={1}
@@ -542,36 +623,12 @@ function Boneca({
                 refHalter={set("halterD")}
               />
 
-              {/* cabeça e rosto */}
-              <mesh position={[0, 1.82, 0]}>
-                <sphereGeometry args={[0.2, 7, 5]} />
-                <Mat c={COR.pele} />
-              </mesh>
-              <Caixa
-                p={[-0.07, 1.84, 0.185]}
-                s={[0.04, 0.04, 0.03]}
-                c="#111827"
-              />
-              <Caixa
-                p={[0.07, 1.84, 0.185]}
-                s={[0.04, 0.04, 0.03]}
-                c="#111827"
-              />
-              <Caixa p={[0, 1.76, 0.19]} s={[0.09, 0.03, 0.03]} c="#dc2626" />
-
-              {/* cabelo cacheado, preso no alto */}
-              <mesh position={[0, 1.84, -0.01]}>
-                <sphereGeometry
-                  args={[0.215, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2]}
-                />
-                <Mat c="#3b0a1c" />
-              </mesh>
-              {CACHOS.map((cacho, i) => (
-                <mesh key={i} position={cacho.p}>
-                  <icosahedronGeometry args={[cacho.r, 0]} />
-                  <Mat c={cacho.c} />
-                </mesh>
-              ))}
+              {/* cabeça (inclina para trás/frente ao deitar) */}
+              <group ref={set("cabeca")} position={[0, 1.62, 0]}>
+                <group position={[0, -1.62, 0]}>
+                  <Cabeca />
+                </group>
+              </group>
             </group>
           </group>
         </group>
@@ -803,7 +860,10 @@ function Estacao({
 
   return (
     <group position={dados.centro}>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, 0]}>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[dados.anel?.[0] ?? 0, 0.025, dados.anel?.[1] ?? 0]}
+      >
         <ringGeometry args={[dados.raio, dados.raio + 0.12, 6]} />
         <meshBasicMaterial ref={anel} color="#10b981" transparent opacity={0} />
       </mesh>
@@ -868,18 +928,28 @@ function ConteudoCartao({ dados }: { dados: EstacaoDados }) {
   );
 }
 
-// Painel de texto: fica acima da cena (em fluxo normal), então nunca cobre
-// a sala nem a animação. Sem nada aberto, mostra uma dica.
-function Painel({ dados }: { dados: EstacaoDados | null }) {
+// Painel de texto. Nunca cobre a sala nem a animação:
+// - celular: fica sobreposto à faixa livre acima da sala, centralizado nela
+//   (altura = "topo", calculada a partir do enquadramento da câmera);
+// - desktop (sm+): faixa em fluxo normal, acima da cena.
+// Sem nada aberto, mostra uma dica.
+function Painel({
+  dados,
+  topo,
+}: {
+  dados: EstacaoDados | null;
+  topo: number;
+}) {
   return (
     <div
       data-ponto
-      className="mx-auto flex min-h-34 w-full max-w-xl items-center justify-center px-4 py-2 sm:min-h-26"
+      style={{ "--topo": `${topo}px` } as CSSProperties}
+      className="absolute inset-x-0 top-0 z-20 flex h-(--topo) items-center justify-center px-4 sm:static sm:z-auto sm:mx-auto sm:h-auto sm:min-h-26 sm:w-full sm:max-w-xl sm:py-2"
     >
       {dados ? (
         <div
           key={dados.id}
-          className="animate-[painel-entra_220ms_ease-out] w-full rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-xl"
+          className="animate-[painel-entra_220ms_ease-out] w-full max-w-md rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-xl"
         >
           <ConteudoCartao dados={dados} />
         </div>
@@ -1007,6 +1077,27 @@ function enquadrar(aspect: number) {
   return { fit, centro: alvo };
 }
 
+/**
+ * Fração (0..1, medida a partir do topo da área 3D) em que a sala começa na
+ * tela, no enquadramento padrão. No celular a sala é larga e baixa, então
+ * sobra um espaço livre acima dela: é lá que o texto fica centralizado.
+ */
+function topoDaSala(aspect: number) {
+  const { fit, centro } = enquadrar(aspect);
+  const cam = new THREE.PerspectiveCamera(FOV, aspect, 0.1, 80);
+  cam.position.copy(centro).addScaledVector(DIR_BASE, fit);
+  cam.lookAt(centro);
+  cam.updateMatrixWorld();
+
+  const p = new THREE.Vector3();
+  let ymax = -Infinity;
+  for (const canto of CANTOS) {
+    p.copy(canto).project(cam);
+    ymax = Math.max(ymax, p.y);
+  }
+  return (1 - ymax) / 2;
+}
+
 function Camera({ hover, reduzir }: { hover: boolean; reduzir: boolean }) {
   const enq = useRef<{
     aspect: number;
@@ -1126,12 +1217,32 @@ export default function AcademiaCena() {
   const [sobre, setSobre] = useState<number | null>(null);
   const [aberta, setAberta] = useState<number | null>(null);
   const [modo, setModo] = useState({ hover: true, reduzir: false });
+  // altura (px) da faixa livre acima da sala, para centralizar o texto no celular
+  const [topo, setTopo] = useState(0);
 
   useEffect(() => {
     setModo({
       hover: window.matchMedia("(hover: hover)").matches,
       reduzir: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     });
+  }, []);
+
+  useEffect(() => {
+    const el = caixa.current;
+    if (!el) return;
+
+    const medir = () => {
+      const { width, height } = el.getBoundingClientRect();
+      if (!width || !height) return;
+      // 16px de folga para o balanço da câmera
+      const px = Math.max(0, Math.round(topoDaSala(width / height) * height - 16));
+      setTopo((atual) => (Math.abs(atual - px) > 1 ? px : atual));
+    };
+
+    medir();
+    const ro = new ResizeObserver(medir);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
   useEffect(() => {
@@ -1166,9 +1277,9 @@ export default function AcademiaCena() {
   }, [aberta]);
 
   return (
-    <div className="flex h-[min(88vh,820px)] min-h-140 w-full flex-col">
-      {/* texto: acima da cena, não cobre a animação */}
-      <Painel dados={aberta === null ? null : ESTACOES[aberta]} />
+    <div className="relative flex h-[min(78vh,680px)] min-h-125 w-full flex-col sm:h-[min(88vh,820px)] sm:min-h-140">
+      {/* texto: fora da área da sala, não cobre a animação */}
+      <Painel dados={aberta === null ? null : ESTACOES[aberta]} topo={topo} />
 
       <div ref={caixa} className="relative min-h-0 flex-1">
         <Canvas
