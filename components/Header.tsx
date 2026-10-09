@@ -150,6 +150,7 @@ export default function Header() {
 
   return (
     <header
+      id="header-principal"
       ref={headerRef}
       className="relative isolate flex h-[100vh] w-full items-center justify-center bg-black p-6 video-placeholder"
     >
@@ -177,16 +178,15 @@ export default function Header() {
 
       <div
         ref={conteudoRef}
-        className="absolute inset-x-6 top-0 z-20 mx-auto max-w-xl transition-none will-change-transform"
+        className="absolute left-6 right-6 top-0 z-20 mx-auto max-w-xl transition-none will-change-transform md:left-[8%] md:right-auto md:mx-0 md:w-[80%] md:max-w-4xl"
       >
-        <div className="flex flex-col  gap-5 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)]">
-          <h2 className="text-[48px] font-bold text-left color-">
-            <span className="text-white">FERNANDA</span>
-            <br />
-            <span className="text-[#08e5b1]">BEZERRA</span>
-          </h2>
+        <div className="flex flex-col items-center gap-5 text-center md:items-start md:text-left drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)]">
+          <h1 className=" text-left text-[clamp(2.5rem,7vw,8rem)] font-black leading-[0.95] tracking-tight">
+            <span className="block text-white">FERNANDA</span>
+            <span className="mt-2 block text-brand">BEZERRA</span>
+          </h1>
 
-          <p className="text-xs tracking-[0.18em] text-white/60 sm:text-sm text-left">
+          <p className="max-w-xl text-sm tracking-[0.12em] text-white/70 sm:text-base lg:text-xl">
             Transformando maus hábitos em qualidade de vida
           </p>
         </div>
