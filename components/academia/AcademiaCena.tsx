@@ -1,8 +1,16 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { ContactShadows, Html } from "@react-three/drei";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ContactShadows } from "@react-three/drei";
+import {
+  forwardRef,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+  type ReactNode,
+} from "react";
 import * as THREE from "three";
 import { ESTACOES, type Estacao as EstacaoDados, type V3 } from "./dados";
 
@@ -104,11 +112,40 @@ function Supino() {
       {/* suportes e anilhas */}
       {[-1, 1].map((lado) => (
         <group key={lado}>
-          <Caixa p={[lado * 0.62, 0.8, -0.5]} s={[0.1, 1.6, 0.1]} c={COR.escuro} />
-          <Caixa p={[lado * 0.62, 0.04, -0.2]} s={[0.12, 0.08, 0.8]} c={COR.escuro} />
-          <Cil p={[lado * 0.92, 1.3, -0.5]} raio={0.4} h={0.07} c={COR.escuro} rot={EIXO_X} lados={10} />
-          <Cil p={[lado * 1.02, 1.3, -0.5]} raio={0.32} h={0.07} c={COR.escuro} rot={EIXO_X} lados={10} />
-          <Cil p={[lado * 1.1, 1.3, -0.5]} raio={0.2} h={0.06} c={COR.verde} rot={EIXO_X} lados={10} />
+          <Caixa
+            p={[lado * 0.62, 0.8, -0.5]}
+            s={[0.1, 1.6, 0.1]}
+            c={COR.escuro}
+          />
+          <Caixa
+            p={[lado * 0.62, 0.04, -0.2]}
+            s={[0.12, 0.08, 0.8]}
+            c={COR.escuro}
+          />
+          <Cil
+            p={[lado * 0.92, 1.3, -0.5]}
+            raio={0.4}
+            h={0.07}
+            c={COR.escuro}
+            rot={EIXO_X}
+            lados={10}
+          />
+          <Cil
+            p={[lado * 1.02, 1.3, -0.5]}
+            raio={0.32}
+            h={0.07}
+            c={COR.escuro}
+            rot={EIXO_X}
+            lados={10}
+          />
+          <Cil
+            p={[lado * 1.1, 1.3, -0.5]}
+            raio={0.2}
+            h={0.06}
+            c={COR.verde}
+            rot={EIXO_X}
+            lados={10}
+          />
         </group>
       ))}
 
@@ -129,12 +166,31 @@ function Esteira() {
       <Caixa p={[0, 0.43, 0.15]} s={[0.78, 0.04, 2.0]} c={COR.esteira} />
       {[-1, 1].map((lado) => (
         <group key={lado}>
-          <Caixa p={[lado * 0.45, 0.95, -1.0]} s={[0.07, 1.2, 0.07]} c={COR.metal} />
-          <Caixa p={[lado * 0.5, 0.85, -0.25]} s={[0.06, 0.06, 1.5]} c={COR.metal} />
+          <Caixa
+            p={[lado * 0.45, 0.95, -1.0]}
+            s={[0.07, 1.2, 0.07]}
+            c={COR.metal}
+          />
+          <Caixa
+            p={[lado * 0.5, 0.85, -0.25]}
+            s={[0.06, 0.06, 1.5]}
+            c={COR.metal}
+          />
         </group>
       ))}
-      <Caixa p={[0, 1.6, -1.0]} s={[1.0, 0.34, 0.16]} c={COR.escuro} rot={[-0.45, 0, 0]} />
-      <Caixa p={[0, 1.64, -0.92]} s={[0.7, 0.2, 0.02]} c={COR.verdeClaro} rot={[-0.45, 0, 0]} e={COR.verdeClaro} />
+      <Caixa
+        p={[0, 1.6, -1.0]}
+        s={[1.0, 0.34, 0.16]}
+        c={COR.escuro}
+        rot={[-0.45, 0, 0]}
+      />
+      <Caixa
+        p={[0, 1.64, -0.92]}
+        s={[0.7, 0.2, 0.02]}
+        c={COR.verdeClaro}
+        rot={[-0.45, 0, 0]}
+        e={COR.verdeClaro}
+      />
     </group>
   );
 }
@@ -155,14 +211,40 @@ const CACHOS: { p: V3; r: number; c: string }[] = [
 ];
 
 // braço com a mão na cintura: ombro -> cotovelo (para fora) -> mão (no quadril)
-function Braco({ lado, tatuagem = false }: { lado: 1 | -1; tatuagem?: boolean }) {
+function Braco({
+  lado,
+  tatuagem = false,
+}: {
+  lado: 1 | -1;
+  tatuagem?: boolean;
+}) {
   return (
     <group scale={[lado, 1, 1]}>
-      <Caixa p={[0.4, 1.34, 0]} s={[0.12, 0.38, 0.14]} c={COR.pele} rot={[0, 0, 0.54]} />
-      <Caixa p={[0.35, 1.43, 0]} s={[0.17, 0.2, 0.18]} c={PRETO} rot={[0, 0, 0.54]} />
-      <Caixa p={[0.4, 1.08, 0]} s={[0.11, 0.3, 0.13]} c={COR.pele} rot={[0, 0, -0.78]} />
+      <Caixa
+        p={[0.4, 1.34, 0]}
+        s={[0.12, 0.38, 0.14]}
+        c={COR.pele}
+        rot={[0, 0, 0.54]}
+      />
+      <Caixa
+        p={[0.35, 1.43, 0]}
+        s={[0.17, 0.2, 0.18]}
+        c={PRETO}
+        rot={[0, 0, 0.54]}
+      />
+      <Caixa
+        p={[0.4, 1.08, 0]}
+        s={[0.11, 0.3, 0.13]}
+        c={COR.pele}
+        rot={[0, 0, -0.78]}
+      />
       {tatuagem && (
-        <Caixa p={[0.4, 1.08, 0]} s={[0.125, 0.2, 0.145]} c="#4b5563" rot={[0, 0, -0.78]} />
+        <Caixa
+          p={[0.4, 1.08, 0]}
+          s={[0.125, 0.2, 0.145]}
+          c="#4b5563"
+          rot={[0, 0, -0.78]}
+        />
       )}
       <Caixa p={[0.3, 0.98, 0]} s={[0.1, 0.1, 0.1]} c={COR.pele} />
     </group>
@@ -176,8 +258,16 @@ function Treinadora() {
       {/* pernas, short e tênis */}
       {[-1, 1].map((lado) => (
         <group key={lado}>
-          <Caixa p={[lado * 0.13, 0.345, 0]} s={[0.16, 0.53, 0.18]} c={COR.pele} />
-          <Caixa p={[lado * 0.13, 0.04, 0.04]} s={[0.17, 0.08, 0.3]} c={PRETO} />
+          <Caixa
+            p={[lado * 0.13, 0.345, 0]}
+            s={[0.16, 0.53, 0.18]}
+            c={COR.pele}
+          />
+          <Caixa
+            p={[lado * 0.13, 0.04, 0.04]}
+            s={[0.17, 0.08, 0.3]}
+            c={PRETO}
+          />
         </group>
       ))}
       <Caixa p={[0, 0.78, 0]} s={[0.54, 0.34, 0.32]} c={PRETO} />
@@ -226,7 +316,15 @@ function Halter({ p, carga }: { p: V3; carga: number }) {
     <group position={p}>
       <Cil p={[0, 0, 0]} raio={0.025} h={0.36} c={COR.metal} rot={EIXO_X} />
       {[-1, 1].map((lado) => (
-        <Cil key={lado} p={[lado * 0.15, 0, 0]} raio={raio} h={largura} c={COR.escuro} rot={EIXO_X} lados={6} />
+        <Cil
+          key={lado}
+          p={[lado * 0.15, 0, 0]}
+          raio={raio}
+          h={largura}
+          c={COR.escuro}
+          rot={EIXO_X}
+          lados={6}
+        />
       ))}
     </group>
   );
@@ -243,7 +341,12 @@ function RackHalteres() {
     <>
       {[-1.25, 1.25].flatMap((x) =>
         [-0.6, 0].map((z) => (
-          <Caixa key={`${x}${z}`} p={[x, 0.7, z]} s={[0.08, 1.4, 0.08]} c={COR.escuro} />
+          <Caixa
+            key={`${x}${z}`}
+            p={[x, 0.7, z]}
+            s={[0.08, 1.4, 0.08]}
+            c={COR.escuro}
+          />
         )),
       )}
 
@@ -251,7 +354,11 @@ function RackHalteres() {
         <group key={y}>
           <Caixa p={[0, y, -0.3]} s={[2.6, 0.07, 0.7]} c={COR.metal} />
           {cargas.map((carga, i) => (
-            <Halter key={i} p={[xs[i], y + 0.035 + 0.09 + carga * 0.07, -0.3]} carga={carga} />
+            <Halter
+              key={i}
+              p={[xs[i], y + 0.035 + 0.09 + carga * 0.07, -0.3]}
+              carga={carga}
+            />
           ))}
         </group>
       ))}
@@ -283,7 +390,11 @@ function Planta() {
       {[0, 1, 2, 3, 4].map((i) => (
         <mesh
           key={i}
-          position={[Math.cos(i * 1.26) * 0.12, 0.85, Math.sin(i * 1.26) * 0.12]}
+          position={[
+            Math.cos(i * 1.26) * 0.12,
+            0.85,
+            Math.sin(i * 1.26) * 0.12,
+          ]}
           rotation={[Math.sin(i * 1.26) * 0.45, 0, -Math.cos(i * 1.26) * 0.45]}
         >
           <coneGeometry args={[0.13, 0.9, 5]} />
@@ -360,11 +471,21 @@ function Estacao({
 
   useFrame((_, dt) => {
     if (grupo.current) {
-      const s = THREE.MathUtils.damp(grupo.current.scale.x, ativa ? 1.04 : 1, 6, dt);
+      const s = THREE.MathUtils.damp(
+        grupo.current.scale.x,
+        ativa ? 1.04 : 1,
+        6,
+        dt,
+      );
       grupo.current.scale.setScalar(s);
     }
     if (anel.current) {
-      anel.current.opacity = THREE.MathUtils.damp(anel.current.opacity, ativa ? 0.9 : 0, 6, dt);
+      anel.current.opacity = THREE.MathUtils.damp(
+        anel.current.opacity,
+        ativa ? 0.9 : 0,
+        6,
+        dt,
+      );
     }
   });
 
@@ -381,14 +502,18 @@ function Estacao({
 
 function Marcador({
   dados,
-  ativa,
-  definir,
+  sobre,
+  aberta,
+  onSobre,
+  onClique,
 }: {
   dados: EstacaoDados;
-  ativa: boolean;
-  definir: (valor: boolean) => void;
+  sobre: boolean;
+  aberta: boolean;
+  onSobre: (valor: boolean) => void;
+  onClique: () => void;
 }) {
-  const tipo = useRef("mouse");
+  const destaque = sobre || aberta;
 
   return (
     <div className="relative">
@@ -396,26 +521,18 @@ function Marcador({
 
       <button
         type="button"
-        aria-expanded={ativa}
+        aria-expanded={aberta}
         aria-label={`${dados.numero} ${dados.titulo}`}
-        onPointerDown={(ev) => {
-          tipo.current = ev.pointerType;
-        }}
         onPointerEnter={(ev) => {
-          if (ev.pointerType === "mouse") definir(true);
+          if (ev.pointerType === "mouse") onSobre(true);
         }}
         onPointerLeave={(ev) => {
-          if (ev.pointerType === "mouse") definir(false);
+          if (ev.pointerType === "mouse") onSobre(false);
         }}
-        onClick={() => (tipo.current === "mouse" ? definir(true) : definir(!ativa))}
-        onFocus={(ev) => {
-          // só abre no foco do teclado (no clique/toque quem decide é o onClick)
-          if (ev.currentTarget.matches(":focus-visible")) definir(true);
-        }}
-        onBlur={() => definir(false)}
+        onClick={onClique}
         className={`relative grid h-9 w-9 place-items-center rounded-full border-2 border-white text-xs font-bold text-white shadow-lg transition-transform ${
-          ativa ? "scale-110 bg-emerald-700" : "bg-emerald-600 hover:scale-110"
-        }`}
+          destaque ? "scale-125" : ""
+        } ${aberta ? "bg-emerald-700" : "bg-emerald-600"}`}
       >
         {dados.numero}
       </button>
@@ -426,16 +543,26 @@ function Marcador({
 function ConteudoCartao({ dados }: { dados: EstacaoDados }) {
   return (
     <>
-      <p className="text-xs font-bold tracking-widest text-emerald-700">{dados.numero}</p>
-      <p className="mt-1 text-base font-semibold text-slate-800">{dados.titulo}</p>
-      <p className="mt-1 text-sm leading-relaxed text-slate-600">{dados.texto}</p>
+      <p className="text-xs font-bold tracking-widest text-emerald-700">
+        {dados.numero}
+      </p>
+      <p className="mt-1 text-base font-semibold text-slate-800">
+        {dados.titulo}
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-slate-600">
+        {dados.texto}
+      </p>
     </>
   );
 }
 
-// Cartão do desktop: fica ao lado do marcador, num elemento próprio com
-// z-index alto, para nunca ficar por baixo de outro marcador.
-function Cartao({ dados }: { dados: EstacaoDados }) {
+// Cartão de texto: filho do marcador aberto (herda a posição e fica por cima
+// dos outros). No desktop abre ao lado; no celular o Projetor o centraliza
+// logo abaixo (ou acima) do marcador, perto do modelo 3D.
+const Cartao = forwardRef<
+  HTMLDivElement,
+  { dados: EstacaoDados; pequeno: boolean }
+>(function Cartao({ dados, pequeno }, ref) {
   const [mostrar, setMostrar] = useState(false);
 
   useEffect(() => {
@@ -444,25 +571,68 @@ function Cartao({ dados }: { dados: EstacaoDados }) {
   }, []);
 
   return (
-    <div className="pointer-events-none relative h-9 w-9">
-      <div
-        className={`absolute top-1/2 w-64 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-xl transition-opacity duration-200 ${
-          dados.lado === "dir" ? "left-full ml-4" : "right-full mr-4"
-        } ${mostrar ? "opacity-100" : "opacity-0"}`}
-      >
-        <ConteudoCartao dados={dados} />
-      </div>
-    </div>
-  );
-}
-
-// Cartão do celular: centralizado na largura da cena, na faixa livre de baixo.
-function CartaoFixo({ dados }: { dados: EstacaoDados }) {
-  return (
-    <div className="pointer-events-none absolute inset-x-4 bottom-4 z-50 mx-auto max-w-sm rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-xl">
+    <div
+      ref={ref}
+      className={`pointer-events-none absolute rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-opacity duration-200 ${
+        mostrar ? "opacity-100" : "opacity-0"
+      } ${
+        pequeno
+          ? "left-0 top-0 text-center"
+          : `top-0 w-64 -translate-y-1/2 text-left ${
+              dados.lado === "dir" ? "left-26px" : "right-26px"
+            }`
+      }`}
+    >
       <ConteudoCartao dados={dados} />
     </div>
   );
+});
+
+// Projeta os marcadores 3D para a tela a cada frame e move os elementos HTML.
+// (DOM normal do React, sem o <Html> do drei: o botão sempre existe no DOM.)
+function Projetor({
+  pontos,
+  cartao,
+  aberta,
+  pequeno,
+}: {
+  pontos: MutableRefObject<(HTMLDivElement | null)[]>;
+  cartao: MutableRefObject<HTMLDivElement | null>;
+  aberta: number | null;
+  pequeno: boolean;
+}) {
+  const v = useMemo(() => new THREE.Vector3(), []);
+
+  useFrame(({ camera, size }) => {
+    camera.updateMatrixWorld();
+
+    ESTACOES.forEach((e, i) => {
+      const el = pontos.current[i];
+      if (!el) return;
+      v.set(...e.marcador).project(camera);
+      const x = (v.x * 0.5 + 0.5) * size.width;
+      const y = (-v.y * 0.5 + 0.5) * size.height;
+      el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+      el.style.visibility = v.z < 1 ? "visible" : "hidden";
+
+      // celular: cartão centralizado na tela, colado ao marcador
+      if (pequeno && aberta === i && cartao.current) {
+        const c = cartao.current;
+        const larg = Math.min(288, size.width - 32);
+        const esq = Math.min(
+          Math.max(x - larg / 2, 16),
+          size.width - 16 - larg,
+        );
+        const alt = c.offsetHeight;
+        const abaixo = y + 30 + alt <= size.height - 8;
+        c.style.width = `${larg}px`;
+        c.style.left = `${(esq - x).toFixed(1)}px`;
+        c.style.top = `${abaixo ? 30 : -30 - alt}px`;
+      }
+    });
+  });
+
+  return null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -524,7 +694,12 @@ function enquadrar(aspect: number) {
       const meio = (lo + hi) / 2;
       posicionar(meio);
       const b = limites();
-      const maior = Math.max(Math.abs(b.xmin), Math.abs(b.xmax), Math.abs(b.ymin), Math.abs(b.ymax));
+      const maior = Math.max(
+        Math.abs(b.xmin),
+        Math.abs(b.xmax),
+        Math.abs(b.ymin),
+        Math.abs(b.ymax),
+      );
       if (maior <= MARGEM) hi = meio;
       else lo = meio;
     }
@@ -538,7 +713,8 @@ function enquadrar(aspect: number) {
     const b = limites();
     const cx = (b.xmin + b.xmax) / 2;
     const cy = (b.ymin + b.ymax) / 2;
-    const meiaAltura = DIR_BASE.length() * fit * Math.tan(THREE.MathUtils.degToRad(FOV / 2));
+    const meiaAltura =
+      DIR_BASE.length() * fit * Math.tan(THREE.MathUtils.degToRad(FOV / 2));
     cam.matrixWorld.extractBasis(direita, cima, tras);
     alvo.addScaledVector(direita, cx * meiaAltura * aspect);
     alvo.addScaledVector(cima, cy * meiaAltura);
@@ -549,7 +725,11 @@ function enquadrar(aspect: number) {
 }
 
 function Camera({ hover, reduzir }: { hover: boolean; reduzir: boolean }) {
-  const enq = useRef<{ aspect: number; fit: number; centro: THREE.Vector3 } | null>(null);
+  const enq = useRef<{
+    aspect: number;
+    fit: number;
+    centro: THREE.Vector3;
+  } | null>(null);
   const pronto = useRef(false);
   const olhar = useRef(new THREE.Vector3());
   const posDestino = useRef(new THREE.Vector3());
@@ -602,35 +782,22 @@ function Camera({ hover, reduzir }: { hover: boolean; reduzir: boolean }) {
 /* ------------------------------------------------------------------ */
 
 function Cena({
-  ativa,
-  setAtiva,
+  sobre,
+  aberta,
   hover,
   reduzir,
   pequeno,
+  pontos,
+  cartao,
 }: {
-  ativa: number | null;
-  setAtiva: (fn: (atual: number | null) => number | null) => void;
+  sobre: number | null;
+  aberta: number | null;
   hover: boolean;
   reduzir: boolean;
   pequeno: boolean;
+  pontos: MutableRefObject<(HTMLDivElement | null)[]>;
+  cartao: MutableRefObject<HTMLDivElement | null>;
 }) {
-  const fechar = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  useEffect(() => () => clearTimeout(fechar.current), []);
-
-  // fechar tem um pequeno atraso: se o mouse escorregar do marcador por um
-  // instante, o cartão não pisca
-  const definir = (i: number) => (valor: boolean) => {
-    clearTimeout(fechar.current);
-    if (valor) {
-      setAtiva(() => i);
-    } else {
-      fechar.current = setTimeout(
-        () => setAtiva((atual) => (atual === i ? null : atual)),
-        150,
-      );
-    }
-  };
-
   const estacoes: ReactNode[] = [
     <Supino key="s" />,
     <group key="e">
@@ -640,8 +807,6 @@ function Cena({
     <RackHalteres key="r" />,
   ];
 
-  const ativaDados = ativa === null ? null : ESTACOES[ativa];
-
   return (
     <>
       <ambientLight intensity={0.9} />
@@ -649,32 +814,20 @@ function Cena({
       <directionalLight position={[6, 9, 5]} intensity={2.2} />
 
       <Camera hover={hover} reduzir={reduzir} />
+      <Projetor
+        pontos={pontos}
+        cartao={cartao}
+        aberta={aberta}
+        pequeno={pequeno}
+      />
 
       <Sala />
 
       {ESTACOES.map((e, i) => (
-        <Estacao key={e.id} dados={e} ativa={ativa === i}>
+        <Estacao key={e.id} dados={e} ativa={sobre === i || aberta === i}>
           {estacoes[i]}
         </Estacao>
       ))}
-
-      {ESTACOES.map((e, i) => (
-        <Html key={e.id} position={e.marcador} center zIndexRange={[20, 0]}>
-          <Marcador dados={e} ativa={ativa === i} definir={definir(i)} />
-        </Html>
-      ))}
-
-      {ativaDados && !pequeno && (
-        <Html
-          key={ativaDados.id}
-          position={ativaDados.marcador}
-          center
-          zIndexRange={[100, 90]}
-          pointerEvents="none"
-        >
-          <Cartao dados={ativaDados} />
-        </Html>
-      )}
 
       <ContactShadows
         position={[0, 0.03, 0]}
@@ -692,9 +845,17 @@ function Cena({
 
 export default function AcademiaCena() {
   const caixa = useRef<HTMLDivElement>(null);
+  const pontos = useRef<(HTMLDivElement | null)[]>([]);
+  const cartao = useRef<HTMLDivElement | null>(null);
   const [visivel, setVisivel] = useState(false);
-  const [ativa, setAtiva] = useState<number | null>(null);
-  const [modo, setModo] = useState({ hover: true, reduzir: false, pequeno: false });
+  // sobre = marcador sob o mouse (só destaca); aberta = marcador clicado (mostra o texto)
+  const [sobre, setSobre] = useState<number | null>(null);
+  const [aberta, setAberta] = useState<number | null>(null);
+  const [modo, setModo] = useState({
+    hover: true,
+    reduzir: false,
+    pequeno: false,
+  });
 
   useEffect(() => {
     const telaPequena = window.matchMedia("(max-width: 639px)");
@@ -723,23 +884,72 @@ export default function AcademiaCena() {
     return () => obs.disconnect();
   }, []);
 
+  // fecha o texto ao clicar fora dos marcadores ou apertar Esc
+  useEffect(() => {
+    if (aberta === null) return;
+    const fora = (ev: PointerEvent) => {
+      if (!(ev.target as Element | null)?.closest?.("[data-ponto]"))
+        setAberta(null);
+    };
+    const esc = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") setAberta(null);
+    };
+    document.addEventListener("pointerdown", fora);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("pointerdown", fora);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [aberta]);
+
   return (
-    <div ref={caixa} className="relative h-[min(78vh,720px)] min-h-[460px] w-full">
+    <div
+      ref={caixa}
+      className="relative h-[min(78vh,720px)] min-h-460px w-full"
+    >
       <Canvas
         frameloop={visivel ? "always" : "never"}
         dpr={[1, 1.5]}
         camera={{ fov: FOV, position: [6.5, 5.2, 9], near: 0.1, far: 80 }}
       >
         <Cena
-          ativa={ativa}
-          setAtiva={setAtiva}
+          sobre={sobre}
+          aberta={aberta}
           hover={modo.hover}
           reduzir={modo.reduzir}
           pequeno={modo.pequeno}
+          pontos={pontos}
+          cartao={cartao}
         />
       </Canvas>
 
-      {modo.pequeno && ativa !== null && <CartaoFixo dados={ESTACOES[ativa]} />}
+      {/* Marcadores: HTML comum por cima do canvas, posicionados pelo Projetor */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {ESTACOES.map((e, i) => (
+          <div
+            key={e.id}
+            data-ponto
+            ref={(el) => {
+              pontos.current[i] = el;
+            }}
+            className="invisible absolute left-0 top-0"
+            style={{ zIndex: aberta === i ? 30 : 10 }}
+          >
+            <div className="pointer-events-auto absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2">
+              <Marcador
+                dados={e}
+                sobre={sobre === i}
+                aberta={aberta === i}
+                onSobre={(valor) => setSobre(valor ? i : null)}
+                onClique={() => setAberta((a) => (a === i ? null : i))}
+              />
+            </div>
+            {aberta === i && (
+              <Cartao ref={cartao} dados={e} pequeno={modo.pequeno} />
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

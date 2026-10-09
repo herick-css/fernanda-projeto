@@ -20,7 +20,8 @@ export default function Academia() {
       <AcademiaCena />
 
       <p className="mt-4 text-center text-sm text-slate-500">
-        Explore a academia: passe o mouse (ou toque) nos pontos numerados.
+        Explore a academia: passe o mouse nos pontos numerados e clique (ou
+        toque) para ler.
       </p>
 
       {/* Mesmo conteúdo em texto, para leitores de tela e buscadores */}
