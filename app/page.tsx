@@ -6,6 +6,8 @@ import ScrollReveal from "@/components/ScrollReveal";
 import TrabalhosGrid from "@/components/TrabalhosGrid";
 import FotoFernanda from "@/components/FotoFernanda";
 import BokehBackground from "@/components/BokehBackground";
+import HeadingSobre from "@/components/HeadingSobre";
+import Academia from "@/components/academia/Academia";
 
 const links = [
   { href: "#sobre-mim", label: "Sobre mim" },
@@ -59,14 +61,7 @@ export default function Home() {
               <div>
                 <p className="eyebrow">Sobre mim</p>
 
-                <h1
-                  id="titulo-sobre"
-                  className="mt-4 text-4xl font-bold leading-tight tracking-tight sm:text-5xl"
-                >
-                  Seu movimento.
-                  <br />
-                  <span className="text-brand">Seu próximo passo.</span>
-                </h1>
+                <HeadingSobre />
                 <p className="mt-6 text-lg font-semibold">
                   Fernanda Bezerra · Personal Trainer
                 </p>
@@ -108,7 +103,7 @@ export default function Home() {
               Uma apresentação inicial dos serviços. As modalidades serão
               ajustadas aos atendimentos oferecidos pela Fernanda.
             </p>
-            <TrabalhosGrid trabalhos={trabalhos} />
+            <Academia />
           </div>
         </ScrollReveal>
 
@@ -136,7 +131,7 @@ export default function Home() {
                     {["Antes", "Depois"].map((label) => (
                       <div
                         key={label}
-                        className="relative flex aspect-[3/4] items-center justify-center bg-[#f1f5f3] p-4"
+                        className="relative flex aspect-3/4 items-center justify-center bg-[#f1f5f3] p-4"
                       >
                         <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-semibold">
                           {label}
@@ -175,7 +170,7 @@ export default function Home() {
               {[1, 2, 3].map((item) => (
                 <div
                   key={item}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-7"
+                  className="rounded-2xl border border-white/10 bg-white/0.03 p-7"
                 >
                   <span aria-hidden="true" className="text-4xl text-brand">
                     “
@@ -214,12 +209,12 @@ export default function Home() {
       <footer
         id="contato"
         aria-labelledby="titulo-contato"
-        className="section-anchor bg-black text-white"
+        className="section-anchor bg-black text-white h-[50vh]"
       >
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-2">
           <div>
             <Image
-              src="/logo-fernanda.png"
+              src="/images/logo-fernanda.png"
               alt="Fernanda Bezerra — Personal Trainer"
               width={520}
               height={138}

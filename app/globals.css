@@ -130,3 +130,54 @@ section[data-dark] .eyebrow {
   transition: opacity 300ms ease;
   will-change: transform;
 }
+
+@keyframes header-parallax {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 calc(var(--fim-parallax) / 2);
+  }
+}
+
+@keyframes header-esmaecer {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.25;
+  }
+}
+
+@keyframes header-escurecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.9;
+  }
+}
+
+/* Só ativa onde o navegador suporta e o usuário não pediu menos movimento */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .header-conteudo {
+      /* quanto o header rola até o texto encostar na borda de baixo (48px = padding) */
+      --fim-parallax: max(1px, calc(100svh - var(--h, 200px) - 48px));
+
+      animation-name: header-parallax, header-esmaecer;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root), scroll(root);
+      animation-range:
+        0px var(--fim-parallax),
+        var(--fim-parallax) calc(100svh - 48px);
+    }
+
+    .header-sombra {
+      animation: header-escurecer linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 50svh;
+    }
+  }
+}

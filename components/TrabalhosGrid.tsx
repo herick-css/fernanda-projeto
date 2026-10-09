@@ -8,11 +8,11 @@ type Trabalho = {
   texto: string;
 };
 
-export default function TrabalhosGrid({
-  trabalhos,
-}: {
+type Props = {
   trabalhos: Trabalho[];
-}) {
+};
+
+export default function TrabalhosGrid({ trabalhos }: Props) {
   const reduzirMovimento = useReducedMotion();
 
   return (
@@ -20,9 +20,14 @@ export default function TrabalhosGrid({
       className="mt-10 grid gap-5 md:grid-cols-3"
       initial="oculto"
       whileInView="visivel"
-      viewport={{ once: true, amount: 0.15 }}
+      viewport={{
+        once: true,
+        amount: 0.15,
+      }}
       variants={{
-        oculto: { opacity: reduzirMovimento ? 1 : 0 },
+        oculto: {
+          opacity: reduzirMovimento ? 1 : 0,
+        },
         visivel: {
           opacity: 1,
           transition: {
@@ -36,15 +41,17 @@ export default function TrabalhosGrid({
       {trabalhos.map((item) => (
         <motion.article
           key={item.numero}
-          className="rounded-2xl border border-black/10 bg-white p-7"
+          className="rounded-2xl border border-black/10 bg-white p-7 transition-[border-color,box-shadow] duration-300 hover:border-brand hover:shadow-lg"
           variants={{
             oculto: {
               opacity: reduzirMovimento ? 1 : 0,
               y: reduzirMovimento ? 0 : 30,
+              filter: reduzirMovimento ? "blur(0px)" : "blur(10px)",
             },
             visivel: {
               opacity: 1,
               y: 0,
+              filter: "blur(0px)",
               transition: {
                 duration: reduzirMovimento ? 0 : 0.5,
                 ease: "easeOut",
