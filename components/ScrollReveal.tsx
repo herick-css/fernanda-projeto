@@ -26,7 +26,7 @@ export default function ScrollReveal({
           y: 0,
           filter: "blur(0px)",
         }}
-        viewport={{ once: false, amount: 0.25 }}
+        viewport={{ once: true, amount: 0.25 }}
         transition={{
           duration: reduzirMovimento ? 0 : 1.2,
           ease: "easeOut",

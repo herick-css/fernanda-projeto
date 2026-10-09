@@ -35,8 +35,8 @@ export const ESTACOES: Estacao[] = [
     texto:
       "Orientação durante os exercícios, atenção à execução e ajustes ao longo do treinamento.",
     centro: [1.2, 0, -1.3],
-    marcador: [1.2, 2.6, -1.3],
-    lado: "dir",
+    marcador: [1.2, 2.9, -1.3],
+    lado: "esq",
     raio: 1.9,
   },
   {

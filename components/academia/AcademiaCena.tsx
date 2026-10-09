@@ -21,7 +21,7 @@ const COR = {
   verde: "#059669",
   verdeEscuro: "#047857",
   verdeClaro: "#34d399",
-  pele: "#e2a97e",
+  pele: "#c98f6b",
   cabelo: "#3b2a20",
   espelho: "#cfe7e6",
 };
@@ -104,40 +104,11 @@ function Supino() {
       {/* suportes e anilhas */}
       {[-1, 1].map((lado) => (
         <group key={lado}>
-          <Caixa
-            p={[lado * 0.62, 0.8, -0.5]}
-            s={[0.1, 1.6, 0.1]}
-            c={COR.escuro}
-          />
-          <Caixa
-            p={[lado * 0.62, 0.04, -0.2]}
-            s={[0.12, 0.08, 0.8]}
-            c={COR.escuro}
-          />
-          <Cil
-            p={[lado * 0.92, 1.3, -0.5]}
-            raio={0.4}
-            h={0.07}
-            c={COR.escuro}
-            rot={EIXO_X}
-            lados={10}
-          />
-          <Cil
-            p={[lado * 1.02, 1.3, -0.5]}
-            raio={0.32}
-            h={0.07}
-            c={COR.escuro}
-            rot={EIXO_X}
-            lados={10}
-          />
-          <Cil
-            p={[lado * 1.1, 1.3, -0.5]}
-            raio={0.2}
-            h={0.06}
-            c={COR.verde}
-            rot={EIXO_X}
-            lados={10}
-          />
+          <Caixa p={[lado * 0.62, 0.8, -0.5]} s={[0.1, 1.6, 0.1]} c={COR.escuro} />
+          <Caixa p={[lado * 0.62, 0.04, -0.2]} s={[0.12, 0.08, 0.8]} c={COR.escuro} />
+          <Cil p={[lado * 0.92, 1.3, -0.5]} raio={0.4} h={0.07} c={COR.escuro} rot={EIXO_X} lados={10} />
+          <Cil p={[lado * 1.02, 1.3, -0.5]} raio={0.32} h={0.07} c={COR.escuro} rot={EIXO_X} lados={10} />
+          <Cil p={[lado * 1.1, 1.3, -0.5]} raio={0.2} h={0.06} c={COR.verde} rot={EIXO_X} lados={10} />
         </group>
       ))}
 
@@ -158,31 +129,42 @@ function Esteira() {
       <Caixa p={[0, 0.43, 0.15]} s={[0.78, 0.04, 2.0]} c={COR.esteira} />
       {[-1, 1].map((lado) => (
         <group key={lado}>
-          <Caixa
-            p={[lado * 0.45, 0.95, -1.0]}
-            s={[0.07, 1.2, 0.07]}
-            c={COR.metal}
-          />
-          <Caixa
-            p={[lado * 0.5, 0.85, -0.25]}
-            s={[0.06, 0.06, 1.5]}
-            c={COR.metal}
-          />
+          <Caixa p={[lado * 0.45, 0.95, -1.0]} s={[0.07, 1.2, 0.07]} c={COR.metal} />
+          <Caixa p={[lado * 0.5, 0.85, -0.25]} s={[0.06, 0.06, 1.5]} c={COR.metal} />
         </group>
       ))}
-      <Caixa
-        p={[0, 1.6, -1.0]}
-        s={[1.0, 0.34, 0.16]}
-        c={COR.escuro}
-        rot={[-0.45, 0, 0]}
-      />
-      <Caixa
-        p={[0, 1.64, -0.92]}
-        s={[0.7, 0.2, 0.02]}
-        c={COR.verdeClaro}
-        rot={[-0.45, 0, 0]}
-        e={COR.verdeClaro}
-      />
+      <Caixa p={[0, 1.6, -1.0]} s={[1.0, 0.34, 0.16]} c={COR.escuro} rot={[-0.45, 0, 0]} />
+      <Caixa p={[0, 1.64, -0.92]} s={[0.7, 0.2, 0.02]} c={COR.verdeClaro} rot={[-0.45, 0, 0]} e={COR.verdeClaro} />
+    </group>
+  );
+}
+
+const PRETO = "#0b0f14";
+
+// mechas do cabelo cacheado preso no alto: [posição, raio, cor]
+const CACHOS: { p: V3; r: number; c: string }[] = [
+  { p: [0, 2.12, -0.1], r: 0.3, c: "#6b1230" },
+  { p: [0.24, 2.02, -0.08], r: 0.2, c: "#9f1239" },
+  { p: [-0.24, 2.02, -0.08], r: 0.2, c: "#9f1239" },
+  { p: [0, 2.38, -0.08], r: 0.2, c: "#9f1239" },
+  { p: [0.16, 2.3, -0.2], r: 0.17, c: "#7f1d3a" },
+  { p: [-0.16, 2.3, -0.2], r: 0.17, c: "#7f1d3a" },
+  { p: [0, 2.0, -0.26], r: 0.22, c: "#7f1d3a" },
+  { p: [0.2, 1.84, -0.24], r: 0.16, c: "#9f1239" },
+  { p: [-0.2, 1.84, -0.24], r: 0.16, c: "#9f1239" },
+];
+
+// braço com a mão na cintura: ombro -> cotovelo (para fora) -> mão (no quadril)
+function Braco({ lado, tatuagem = false }: { lado: 1 | -1; tatuagem?: boolean }) {
+  return (
+    <group scale={[lado, 1, 1]}>
+      <Caixa p={[0.4, 1.34, 0]} s={[0.12, 0.38, 0.14]} c={COR.pele} rot={[0, 0, 0.54]} />
+      <Caixa p={[0.35, 1.43, 0]} s={[0.17, 0.2, 0.18]} c={PRETO} rot={[0, 0, 0.54]} />
+      <Caixa p={[0.4, 1.08, 0]} s={[0.11, 0.3, 0.13]} c={COR.pele} rot={[0, 0, -0.78]} />
+      {tatuagem && (
+        <Caixa p={[0.4, 1.08, 0]} s={[0.125, 0.2, 0.145]} c="#4b5563" rot={[0, 0, -0.78]} />
+      )}
+      <Caixa p={[0.3, 0.98, 0]} s={[0.1, 0.1, 0.1]} c={COR.pele} />
     </group>
   );
 }
@@ -191,24 +173,44 @@ function Treinadora() {
   return (
     // de frente para a esteira (olhando para -x)
     <group position={[1.0, 0, 0.5]} rotation={[0, -Math.PI / 2, 0]}>
-      <Caixa p={[-0.12, 0.45, 0]} s={[0.18, 0.9, 0.2]} c="#334155" />
-      <Caixa p={[0.12, 0.45, 0]} s={[0.18, 0.9, 0.2]} c="#334155" />
-      <Caixa p={[0, 1.25, 0]} s={[0.52, 0.7, 0.3]} c={COR.verde} />
-      <Caixa p={[-0.34, 1.25, 0]} s={[0.13, 0.62, 0.16]} c={COR.pele} />
-      <Caixa p={[0.34, 1.25, 0]} s={[0.13, 0.62, 0.16]} c={COR.pele} />
-      {/* prancheta */}
-      <Caixa p={[0.2, 1.15, 0.2]} s={[0.3, 0.38, 0.03]} c="#f8fafc" />
-      <Caixa p={[0.2, 1.36, 0.22]} s={[0.12, 0.05, 0.04]} c={COR.escuro} />
-      {/* cabeça e cabelo */}
+      {/* pernas, short e tênis */}
+      {[-1, 1].map((lado) => (
+        <group key={lado}>
+          <Caixa p={[lado * 0.13, 0.345, 0]} s={[0.16, 0.53, 0.18]} c={COR.pele} />
+          <Caixa p={[lado * 0.13, 0.04, 0.04]} s={[0.17, 0.08, 0.3]} c={PRETO} />
+        </group>
+      ))}
+      <Caixa p={[0, 0.78, 0]} s={[0.54, 0.34, 0.32]} c={PRETO} />
+
+      {/* camiseta preta + colar */}
+      <Caixa p={[0, 1.25, 0]} s={[0.52, 0.7, 0.3]} c={PRETO} />
+      <Caixa p={[0, 1.56, 0.155]} s={[0.14, 0.02, 0.01]} c="#f59e0b" />
+      <Caixa p={[0, 1.5, 0.16]} s={[0.04, 0.07, 0.02]} c="#f59e0b" />
+
+      {/* braços (um com tatuagem) */}
+      <Braco lado={1} />
+      <Braco lado={-1} tatuagem />
+
+      {/* cabeça e rosto */}
       <mesh position={[0, 1.82, 0]}>
         <sphereGeometry args={[0.2, 7, 5]} />
         <Mat c={COR.pele} />
       </mesh>
+      <Caixa p={[-0.07, 1.84, 0.185]} s={[0.04, 0.04, 0.03]} c="#111827" />
+      <Caixa p={[0.07, 1.84, 0.185]} s={[0.04, 0.04, 0.03]} c="#111827" />
+      <Caixa p={[0, 1.76, 0.19]} s={[0.09, 0.03, 0.03]} c="#dc2626" />
+
+      {/* cabelo cacheado, preso no alto */}
       <mesh position={[0, 1.84, -0.01]}>
         <sphereGeometry args={[0.215, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <Mat c={COR.cabelo} />
+        <Mat c="#3b0a1c" />
       </mesh>
-      <Caixa p={[0, 1.72, -0.24]} s={[0.1, 0.3, 0.1]} c={COR.cabelo} />
+      {CACHOS.map((cacho, i) => (
+        <mesh key={i} position={cacho.p}>
+          <icosahedronGeometry args={[cacho.r, 0]} />
+          <Mat c={cacho.c} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -224,15 +226,7 @@ function Halter({ p, carga }: { p: V3; carga: number }) {
     <group position={p}>
       <Cil p={[0, 0, 0]} raio={0.025} h={0.36} c={COR.metal} rot={EIXO_X} />
       {[-1, 1].map((lado) => (
-        <Cil
-          key={lado}
-          p={[lado * 0.15, 0, 0]}
-          raio={raio}
-          h={largura}
-          c={COR.escuro}
-          rot={EIXO_X}
-          lados={6}
-        />
+        <Cil key={lado} p={[lado * 0.15, 0, 0]} raio={raio} h={largura} c={COR.escuro} rot={EIXO_X} lados={6} />
       ))}
     </group>
   );
@@ -249,12 +243,7 @@ function RackHalteres() {
     <>
       {[-1.25, 1.25].flatMap((x) =>
         [-0.6, 0].map((z) => (
-          <Caixa
-            key={`${x}${z}`}
-            p={[x, 0.7, z]}
-            s={[0.08, 1.4, 0.08]}
-            c={COR.escuro}
-          />
+          <Caixa key={`${x}${z}`} p={[x, 0.7, z]} s={[0.08, 1.4, 0.08]} c={COR.escuro} />
         )),
       )}
 
@@ -262,11 +251,7 @@ function RackHalteres() {
         <group key={y}>
           <Caixa p={[0, y, -0.3]} s={[2.6, 0.07, 0.7]} c={COR.metal} />
           {cargas.map((carga, i) => (
-            <Halter
-              key={i}
-              p={[xs[i], y + 0.035 + 0.09 + carga * 0.07, -0.3]}
-              carga={carga}
-            />
+            <Halter key={i} p={[xs[i], y + 0.035 + 0.09 + carga * 0.07, -0.3]} carga={carga} />
           ))}
         </group>
       ))}
@@ -298,11 +283,7 @@ function Planta() {
       {[0, 1, 2, 3, 4].map((i) => (
         <mesh
           key={i}
-          position={[
-            Math.cos(i * 1.26) * 0.12,
-            0.85,
-            Math.sin(i * 1.26) * 0.12,
-          ]}
+          position={[Math.cos(i * 1.26) * 0.12, 0.85, Math.sin(i * 1.26) * 0.12]}
           rotation={[Math.sin(i * 1.26) * 0.45, 0, -Math.cos(i * 1.26) * 0.45]}
         >
           <coneGeometry args={[0.13, 0.9, 5]} />
@@ -379,21 +360,11 @@ function Estacao({
 
   useFrame((_, dt) => {
     if (grupo.current) {
-      const s = THREE.MathUtils.damp(
-        grupo.current.scale.x,
-        ativa ? 1.04 : 1,
-        6,
-        dt,
-      );
+      const s = THREE.MathUtils.damp(grupo.current.scale.x, ativa ? 1.04 : 1, 6, dt);
       grupo.current.scale.setScalar(s);
     }
     if (anel.current) {
-      anel.current.opacity = THREE.MathUtils.damp(
-        anel.current.opacity,
-        ativa ? 0.9 : 0,
-        6,
-        dt,
-      );
+      anel.current.opacity = THREE.MathUtils.damp(anel.current.opacity, ativa ? 0.9 : 0, 6, dt);
     }
   });
 
@@ -436,9 +407,7 @@ function Marcador({
         onPointerLeave={(ev) => {
           if (ev.pointerType === "mouse") definir(false);
         }}
-        onClick={() =>
-          tipo.current === "mouse" ? definir(true) : definir(!ativa)
-        }
+        onClick={() => (tipo.current === "mouse" ? definir(true) : definir(!ativa))}
         onFocus={(ev) => {
           // só abre no foco do teclado (no clique/toque quem decide é o onClick)
           if (ev.currentTarget.matches(":focus-visible")) definir(true);
@@ -450,23 +419,48 @@ function Marcador({
       >
         {dados.numero}
       </button>
+    </div>
+  );
+}
 
+function ConteudoCartao({ dados }: { dados: EstacaoDados }) {
+  return (
+    <>
+      <p className="text-xs font-bold tracking-widest text-emerald-700">{dados.numero}</p>
+      <p className="mt-1 text-base font-semibold text-slate-800">{dados.titulo}</p>
+      <p className="mt-1 text-sm leading-relaxed text-slate-600">{dados.texto}</p>
+    </>
+  );
+}
+
+// Cartão do desktop: fica ao lado do marcador, num elemento próprio com
+// z-index alto, para nunca ficar por baixo de outro marcador.
+function Cartao({ dados }: { dados: EstacaoDados }) {
+  const [mostrar, setMostrar] = useState(false);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMostrar(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  return (
+    <div className="pointer-events-none relative h-9 w-9">
       <div
-        aria-hidden={!ativa}
-        className={`pointer-events-none absolute top-1/2 w-64 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-xl transition-opacity duration-200 ${
+        className={`absolute top-1/2 w-64 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-xl transition-opacity duration-200 ${
           dados.lado === "dir" ? "left-full ml-4" : "right-full mr-4"
-        } ${ativa ? "opacity-100" : "opacity-0"}`}
+        } ${mostrar ? "opacity-100" : "opacity-0"}`}
       >
-        <p className="text-xs font-bold tracking-widest text-emerald-700">
-          {dados.numero}
-        </p>
-        <p className="mt-1 text-base font-semibold text-slate-800">
-          {dados.titulo}
-        </p>
-        <p className="mt-1 text-sm leading-relaxed text-slate-600">
-          {dados.texto}
-        </p>
+        <ConteudoCartao dados={dados} />
       </div>
+    </div>
+  );
+}
+
+// Cartão do celular: centralizado na largura da cena, na faixa livre de baixo.
+function CartaoFixo({ dados }: { dados: EstacaoDados }) {
+  return (
+    <div className="pointer-events-none absolute inset-x-4 bottom-4 z-50 mx-auto max-w-sm rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-xl">
+      <ConteudoCartao dados={dados} />
     </div>
   );
 }
@@ -530,12 +524,7 @@ function enquadrar(aspect: number) {
       const meio = (lo + hi) / 2;
       posicionar(meio);
       const b = limites();
-      const maior = Math.max(
-        Math.abs(b.xmin),
-        Math.abs(b.xmax),
-        Math.abs(b.ymin),
-        Math.abs(b.ymax),
-      );
+      const maior = Math.max(Math.abs(b.xmin), Math.abs(b.xmax), Math.abs(b.ymin), Math.abs(b.ymax));
       if (maior <= MARGEM) hi = meio;
       else lo = meio;
     }
@@ -549,8 +538,7 @@ function enquadrar(aspect: number) {
     const b = limites();
     const cx = (b.xmin + b.xmax) / 2;
     const cy = (b.ymin + b.ymax) / 2;
-    const meiaAltura =
-      DIR_BASE.length() * fit * Math.tan(THREE.MathUtils.degToRad(FOV / 2));
+    const meiaAltura = DIR_BASE.length() * fit * Math.tan(THREE.MathUtils.degToRad(FOV / 2));
     cam.matrixWorld.extractBasis(direita, cima, tras);
     alvo.addScaledVector(direita, cx * meiaAltura * aspect);
     alvo.addScaledVector(cima, cy * meiaAltura);
@@ -560,20 +548,8 @@ function enquadrar(aspect: number) {
   return { fit, centro: alvo };
 }
 
-function Camera({
-  alvo,
-  hover,
-  reduzir,
-}: {
-  alvo: V3 | null;
-  hover: boolean;
-  reduzir: boolean;
-}) {
-  const enq = useRef<{
-    aspect: number;
-    fit: number;
-    centro: THREE.Vector3;
-  } | null>(null);
+function Camera({ hover, reduzir }: { hover: boolean; reduzir: boolean }) {
+  const enq = useRef<{ aspect: number; fit: number; centro: THREE.Vector3 } | null>(null);
   const pronto = useRef(false);
   const olhar = useRef(new THREE.Vector3());
   const posDestino = useRef(new THREE.Vector3());
@@ -598,12 +574,7 @@ function Camera({
     posDestino.current.x += px * 2.2 * fit;
     posDestino.current.y += py * 1.0 * fit;
 
-    // ao ativar uma estação, o olhar se desloca levemente na direção dela
     olharDestino.current.copy(centro);
-    if (alvo) {
-      olharDestino.current.x += alvo[0] * 0.3;
-      olharDestino.current.z += alvo[2] * 0.3;
-    }
 
     if (!pronto.current) {
       // primeiro frame: já começa enquadrada (sem animação de zoom)
@@ -635,14 +606,30 @@ function Cena({
   setAtiva,
   hover,
   reduzir,
+  pequeno,
 }: {
   ativa: number | null;
   setAtiva: (fn: (atual: number | null) => number | null) => void;
   hover: boolean;
   reduzir: boolean;
+  pequeno: boolean;
 }) {
-  const definir = (i: number) => (valor: boolean) =>
-    setAtiva((atual) => (valor ? i : atual === i ? null : atual));
+  const fechar = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(fechar.current), []);
+
+  // fechar tem um pequeno atraso: se o mouse escorregar do marcador por um
+  // instante, o cartão não pisca
+  const definir = (i: number) => (valor: boolean) => {
+    clearTimeout(fechar.current);
+    if (valor) {
+      setAtiva(() => i);
+    } else {
+      fechar.current = setTimeout(
+        () => setAtiva((atual) => (atual === i ? null : atual)),
+        150,
+      );
+    }
+  };
 
   const estacoes: ReactNode[] = [
     <Supino key="s" />,
@@ -653,17 +640,15 @@ function Cena({
     <RackHalteres key="r" />,
   ];
 
+  const ativaDados = ativa === null ? null : ESTACOES[ativa];
+
   return (
     <>
       <ambientLight intensity={0.9} />
       <hemisphereLight args={["#ffffff", "#c9d6cf", 0.6]} />
       <directionalLight position={[6, 9, 5]} intensity={2.2} />
 
-      <Camera
-        alvo={ativa === null ? null : ESTACOES[ativa].centro}
-        hover={hover}
-        reduzir={reduzir}
-      />
+      <Camera hover={hover} reduzir={reduzir} />
 
       <Sala />
 
@@ -678,6 +663,18 @@ function Cena({
           <Marcador dados={e} ativa={ativa === i} definir={definir(i)} />
         </Html>
       ))}
+
+      {ativaDados && !pequeno && (
+        <Html
+          key={ativaDados.id}
+          position={ativaDados.marcador}
+          center
+          zIndexRange={[100, 90]}
+          pointerEvents="none"
+        >
+          <Cartao dados={ativaDados} />
+        </Html>
+      )}
 
       <ContactShadows
         position={[0, 0.03, 0]}
@@ -697,14 +694,23 @@ export default function AcademiaCena() {
   const caixa = useRef<HTMLDivElement>(null);
   const [visivel, setVisivel] = useState(false);
   const [ativa, setAtiva] = useState<number | null>(null);
-  const [modo, setModo] = useState({ hover: true, reduzir: false });
+  const [modo, setModo] = useState({ hover: true, reduzir: false, pequeno: false });
 
   useEffect(() => {
-    setModo({
-      hover: window.matchMedia("(hover: hover)").matches,
-      reduzir: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    });
+    const telaPequena = window.matchMedia("(max-width: 639px)");
+    const atualizar = () =>
+      setModo({
+        hover: window.matchMedia("(hover: hover)").matches,
+        reduzir: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+        pequeno: telaPequena.matches,
+      });
 
+    atualizar();
+    telaPequena.addEventListener("change", atualizar);
+    return () => telaPequena.removeEventListener("change", atualizar);
+  }, []);
+
+  useEffect(() => {
     const el = caixa.current;
     if (!el) return;
 
@@ -718,10 +724,7 @@ export default function AcademiaCena() {
   }, []);
 
   return (
-    <div
-      ref={caixa}
-      className="relative h-[min(78vh,720px)] min-h-460px w-full"
-    >
+    <div ref={caixa} className="relative h-[min(78vh,720px)] min-h-[460px] w-full">
       <Canvas
         frameloop={visivel ? "always" : "never"}
         dpr={[1, 1.5]}
@@ -732,8 +735,11 @@ export default function AcademiaCena() {
           setAtiva={setAtiva}
           hover={modo.hover}
           reduzir={modo.reduzir}
+          pequeno={modo.pequeno}
         />
       </Canvas>
+
+      {modo.pequeno && ativa !== null && <CartaoFixo dados={ESTACOES[ativa]} />}
     </div>
   );
 }
