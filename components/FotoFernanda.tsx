@@ -60,7 +60,7 @@ export default function FotoFernanda() {
       onPointerMove={mover}
       onPointerLeave={resetar}
       onPointerCancel={resetar}
-      className="w-full perspective:1000px"
+      className="w-full"
     >
       {/* Entrada da foto. */}
       <motion.div
@@ -70,13 +70,11 @@ export default function FotoFernanda() {
             : {
                 opacity: 0,
                 x: 80,
-                filter: "blur(10px)",
               }
         }
         whileInView={{
           opacity: 1,
           x: 0,
-          filter: "blur(0px)",
         }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{
@@ -93,7 +91,7 @@ export default function FotoFernanda() {
           }}
         >
           <Image
-            src="/images/foto-fernanda-dois.png"
+            src="/images/foto-fernanda-dois.webp"
             alt="Fernanda Bezerra"
             width={600}
             height={800}

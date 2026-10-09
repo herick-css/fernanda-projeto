@@ -84,9 +84,14 @@ section[data-dark] .eyebrow {
     var(--color-brand) 35%,
     transparent 70%
   );
-  filter: blur(35px);
   opacity: 0.12;
   animation: bokeh-float 18s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+/* Pausa quando a seção está fora da tela (definido em BokehBackground.tsx). */
+[data-pausado="true"] .bokeh-light {
+  animation-play-state: paused;
 }
 
 @keyframes bokeh-float {
@@ -125,7 +130,6 @@ section[data-dark] .eyebrow {
     var(--color-brand) 35%,
     transparent 70%
   );
-  filter: blur(35px);
   opacity: 0;
   transition: opacity 300ms ease;
   will-change: transform;
@@ -179,5 +183,53 @@ section[data-dark] .eyebrow {
       animation-timeline: scroll(root);
       animation-range: 0px 50svh;
     }
+  }
+}
+
+/* Navbar: começa transparente, sem blur e sem borda; conforme o scroll passa
+   pelo header, a cor, a borda e o backdrop-blur (0 -> 12px) entram juntos.
+   Os valores base abaixo são o estado final (usado em navegadores sem
+   suporte a scroll-driven animations). */
+.navbar-fundo {
+  background-color: rgba(21, 67, 52, 0.38);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+@keyframes navbar-aparecer {
+  from {
+    background-color: rgba(21, 67, 52, 0);
+    border-bottom-color: rgba(255, 255, 255, 0);
+    -webkit-backdrop-filter: blur(0px);
+    backdrop-filter: blur(0px);
+  }
+  to {
+    background-color: rgba(21, 67, 52, 0.38);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .navbar-fundo {
+      animation: navbar-aparecer linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px var(--navbar-fim, 100svh);
+    }
+  }
+}
+
+/* Painel de texto da academia 3D: entrada suave */
+@keyframes painel-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -22,20 +22,38 @@ export default function BokehBackground() {
 
     const section = fundo.parentElement;
 
+    // pausa as animações quando a seção não está visível
+    const visibilidade = new IntersectionObserver(([entrada]) => {
+      fundo.dataset.pausado = entrada.isIntersecting ? "false" : "true";
+    });
+    visibilidade.observe(fundo);
+
     const permitido = window.matchMedia(
       "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
     );
 
-    if (!permitido.matches) return;
+    if (!permitido.matches) return () => visibilidade.disconnect();
 
     let frame: number | null = null;
     let x = 0;
     let y = 0;
+    // mede uma vez (e quando a área muda) em vez de a cada movimento do mouse
+    let rect = fundo.getBoundingClientRect();
+    let sujo = false;
+    const invalidar = () => {
+      sujo = true;
+    };
+    const ro = new ResizeObserver(invalidar);
+    ro.observe(fundo);
+    window.addEventListener("scroll", invalidar, { passive: true });
 
     function mover(event: PointerEvent) {
       if (!fundo || !luz) return;
 
-      const rect = fundo.getBoundingClientRect();
+      if (sujo) {
+        rect = fundo.getBoundingClientRect();
+        sujo = false;
+      }
 
       x = event.clientX - rect.left;
       y = event.clientY - rect.top;
@@ -60,6 +78,9 @@ export default function BokehBackground() {
     section.addEventListener("pointerleave", esconder);
 
     return () => {
+      ro.disconnect();
+      visibilidade.disconnect();
+      window.removeEventListener("scroll", invalidar);
       section.removeEventListener("pointermove", mover);
       section.removeEventListener("pointerleave", esconder);
 

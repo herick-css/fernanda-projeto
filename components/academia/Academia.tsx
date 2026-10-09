@@ -8,7 +8,7 @@ const AcademiaCena = dynamic(() => import("./AcademiaCena"), {
   ssr: false,
   loading: () => (
     <div
-      className="h-[min(78vh,720px)] min-h-460px w-full"
+      className="h-[min(88vh,820px)] min-h-[560px] w-full"
       aria-hidden="true"
     />
   ),
@@ -18,11 +18,6 @@ export default function Academia() {
   return (
     <div>
       <AcademiaCena />
-
-      <p className="mt-4 text-center text-sm text-slate-500">
-        Explore a academia: passe o mouse nos pontos numerados e clique (ou
-        toque) para ler.
-      </p>
 
       {/* Mesmo conteúdo em texto, para leitores de tela e buscadores */}
       <ul className="sr-only">

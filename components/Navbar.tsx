@@ -23,44 +23,20 @@ export default function Navbar() {
     const root = document.documentElement;
     const alturaAnterior = root.style.getPropertyValue("--navbar-height");
 
-    let frame: number | null = null;
     let alturaNav = 0;
 
-    function atualizarFundo() {
-      if (!nav || !header) return;
-
-      const { top, height } = header.getBoundingClientRect();
-
-      const progresso = Math.min(
-        1,
-        Math.max(0, -top / Math.max(1, height - alturaNav)),
-      );
-
-      // #101312: verde bem escuro.
-      nav.style.backgroundColor = `rgba(21, 67, 52, ${progresso * (96 / 255)})`;
-
-      nav.style.backdropFilter = `blur(${progresso * 12}px)`;
-
-      nav.style.borderBottomColor = `rgba(255, 255, 255, ${progresso * 0.1})`;
-    }
-
-    function agendarAtualizacao() {
-      if (frame !== null) return;
-
-      frame = requestAnimationFrame(() => {
-        frame = null;
-        atualizarFundo();
-      });
-    }
-
     function medir() {
-      if (!nav) return;
+      if (!nav || !header) return;
 
       alturaNav = nav.getBoundingClientRect().height;
 
       root.style.setProperty("--navbar-height", `${alturaNav}px`);
 
-      agendarAtualizacao();
+      // distância de scroll em que o fundo da navbar termina de aparecer
+      root.style.setProperty(
+        "--navbar-fim",
+        `${Math.max(1, header.offsetHeight - alturaNav)}px`,
+      );
     }
 
     const observer = new ResizeObserver(medir);
@@ -69,25 +45,16 @@ export default function Navbar() {
     observer.observe(header);
 
     medir();
-    atualizarFundo();
-
-    window.addEventListener("scroll", agendarAtualizacao, {
-      passive: true,
-    });
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("scroll", agendarAtualizacao);
-
-      if (frame !== null) {
-        cancelAnimationFrame(frame);
-      }
 
       if (alturaAnterior) {
         root.style.setProperty("--navbar-height", alturaAnterior);
       } else {
         root.style.removeProperty("--navbar-height");
       }
+      root.style.removeProperty("--navbar-fim");
     };
   }, []);
 
@@ -95,9 +62,9 @@ export default function Navbar() {
     <nav
       ref={navRef}
       aria-label="Navegação principal"
-      className="fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-transparent backdrop-blur-md"
+      className="navbar-fundo fixed inset-x-0 top-0 z-30"
     >
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-1 px-4 py-[1.5rem] sm:gap-x-8">
+      <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-1 px-4 py-6 sm:gap-x-8">
         {links.map((link) => (
           <a
             key={link.href}

@@ -1,14 +1,15 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { ContactShadows } from "@react-three/drei";
+import { ContactShadows, useTexture } from "@react-three/drei";
 import {
-  forwardRef,
+  Suspense,
   useEffect,
   useMemo,
   useRef,
   useState,
   type MutableRefObject,
+  type RefObject,
   type ReactNode,
 } from "react";
 import * as THREE from "three";
@@ -101,56 +102,59 @@ const EIXO_X: V3 = [0, 0, Math.PI / 2];
 /* Estação 01 – banco com barra (treino personalizado)                 */
 /* ------------------------------------------------------------------ */
 
-function Supino() {
+function Supino({ barra }: { barra: RefGrupo }) {
+  const Z = -0.37; // a barra fica sobre os ombros de quem deita
   return (
     <>
-      {/* banco */}
-      <Caixa p={[0, 0.45, 0.3]} s={[0.5, 0.12, 1.7]} c={COR.verdeEscuro} />
-      <Caixa p={[0, 0.2, -0.4]} s={[0.4, 0.4, 0.08]} c={COR.escuro} />
-      <Caixa p={[0, 0.2, 1.0]} s={[0.4, 0.4, 0.08]} c={COR.escuro} />
+      {/* banco (comprido o bastante para a boneca deitar) */}
+      <Caixa p={[0, 0.45, 0.1]} s={[0.5, 0.12, 2.1]} c={COR.verdeEscuro} />
+      <Caixa p={[0, 0.2, -0.55]} s={[0.4, 0.4, 0.08]} c={COR.escuro} />
+      <Caixa p={[0, 0.2, 0.95]} s={[0.4, 0.4, 0.08]} c={COR.escuro} />
 
-      {/* suportes e anilhas */}
+      {/* suportes */}
       {[-1, 1].map((lado) => (
         <group key={lado}>
+          <Caixa p={[lado * 0.62, 0.8, Z]} s={[0.1, 1.6, 0.1]} c={COR.escuro} />
           <Caixa
-            p={[lado * 0.62, 0.8, -0.5]}
-            s={[0.1, 1.6, 0.1]}
-            c={COR.escuro}
-          />
-          <Caixa
-            p={[lado * 0.62, 0.04, -0.2]}
+            p={[lado * 0.62, 0.04, Z + 0.3]}
             s={[0.12, 0.08, 0.8]}
             c={COR.escuro}
-          />
-          <Cil
-            p={[lado * 0.92, 1.3, -0.5]}
-            raio={0.4}
-            h={0.07}
-            c={COR.escuro}
-            rot={EIXO_X}
-            lados={10}
-          />
-          <Cil
-            p={[lado * 1.02, 1.3, -0.5]}
-            raio={0.32}
-            h={0.07}
-            c={COR.escuro}
-            rot={EIXO_X}
-            lados={10}
-          />
-          <Cil
-            p={[lado * 1.1, 1.3, -0.5]}
-            raio={0.2}
-            h={0.06}
-            c={COR.verde}
-            rot={EIXO_X}
-            lados={10}
           />
         </group>
       ))}
 
-      {/* barra */}
-      <Cil p={[0, 1.3, -0.5]} raio={0.03} h={2.5} c={COR.metal} rot={EIXO_X} />
+      {/* barra + anilhas (sobem e descem juntas) */}
+      <group ref={barra}>
+        {[-1, 1].map((lado) => (
+          <group key={lado}>
+            <Cil
+              p={[lado * 0.92, 1.3, Z]}
+              raio={0.4}
+              h={0.07}
+              c={COR.escuro}
+              rot={EIXO_X}
+              lados={10}
+            />
+            <Cil
+              p={[lado * 1.02, 1.3, Z]}
+              raio={0.32}
+              h={0.07}
+              c={COR.escuro}
+              rot={EIXO_X}
+              lados={10}
+            />
+            <Cil
+              p={[lado * 1.1, 1.3, Z]}
+              raio={0.2}
+              h={0.06}
+              c={COR.verde}
+              rot={EIXO_X}
+              lados={10}
+            />
+          </group>
+        ))}
+        <Cil p={[0, 1.3, Z]} raio={0.03} h={2.5} c={COR.metal} rot={EIXO_X} />
+      </group>
     </>
   );
 }
@@ -159,11 +163,22 @@ function Supino() {
 /* Estação 02 – esteira + a profissional (acompanhamento)              */
 /* ------------------------------------------------------------------ */
 
-function Esteira() {
+function Esteira({ faixas }: { faixas: RefGrupo }) {
   return (
     <group position={[-0.8, 0, -0.1]}>
       <Caixa p={[0, 0.3, 0.1]} s={[1.0, 0.22, 2.4]} c={COR.escuro} />
       <Caixa p={[0, 0.43, 0.15]} s={[0.78, 0.04, 2.0]} c={COR.esteira} />
+      {/* faixas que se movem quando ela corre */}
+      <group ref={faixas}>
+        {[0, 1, 2, 3, 4].map((i) => (
+          <Caixa
+            key={i}
+            p={[0, 0.455, -0.65 + i * 0.4]}
+            s={[0.7, 0.012, 0.05]}
+            c={COR.verdeClaro}
+          />
+        ))}
+      </group>
       {[-1, 1].map((lado) => (
         <group key={lado}>
           <Caixa
@@ -210,97 +225,357 @@ const CACHOS: { p: V3; r: number; c: string }[] = [
   { p: [-0.2, 1.84, -0.24], r: 0.16, c: "#9f1239" },
 ];
 
-// braço com a mão na cintura: ombro -> cotovelo (para fora) -> mão (no quadril)
-function Braco({
+/* ------------------------------------------------------------------ */
+/* Boneca articulada (PLACEHOLDER das animações)                       */
+/* Quando o .glb do animador ficar pronto, este bloco é substituído:   */
+/* mantém-se a lógica "clicou -> vai até a estação -> toca a ação".    */
+/* ------------------------------------------------------------------ */
+
+type RefGrupo = RefObject<THREE.Group | null>;
+
+// comprimento do braço (ombro->cotovelo, cotovelo->mão)
+const BRACO_A = 0.34;
+const BRACO_B = 0.33;
+
+// cinemática inversa de 2 ossos no plano y-z: devolve [ângulo do ombro, ângulo do cotovelo]
+function ik(ty: number, tz: number): [number, number] {
+  const a = BRACO_A;
+  const b = BRACO_B;
+  const lim = (v: number) => Math.max(-1, Math.min(1, v));
+  const d = Math.min(
+    Math.max(Math.hypot(ty, tz), Math.abs(a - b) + 0.01),
+    a + b - 0.001,
+  );
+  const phi = Math.atan2(-tz, -ty);
+  const alfa = Math.acos(lim((a * a + d * d - b * b) / (2 * a * d)));
+  const gama = Math.acos(lim((b * b + d * d - a * a) / (2 * b * d)));
+  const pu = phi + alfa;
+  const pf = phi - gama;
+  return [pu, pf - pu];
+}
+
+function BracoArt({
   lado,
   tatuagem = false,
+  refOmbro,
+  refCotovelo,
+  refHalter,
 }: {
   lado: 1 | -1;
   tatuagem?: boolean;
+  refOmbro: (g: THREE.Group | null) => void;
+  refCotovelo: (g: THREE.Group | null) => void;
+  refHalter: (g: THREE.Group | null) => void;
 }) {
   return (
-    <group scale={[lado, 1, 1]}>
-      <Caixa
-        p={[0.4, 1.34, 0]}
-        s={[0.12, 0.38, 0.14]}
-        c={COR.pele}
-        rot={[0, 0, 0.54]}
-      />
-      <Caixa
-        p={[0.35, 1.43, 0]}
-        s={[0.17, 0.2, 0.18]}
-        c={PRETO}
-        rot={[0, 0, 0.54]}
-      />
-      <Caixa
-        p={[0.4, 1.08, 0]}
-        s={[0.11, 0.3, 0.13]}
-        c={COR.pele}
-        rot={[0, 0, -0.78]}
-      />
-      {tatuagem && (
-        <Caixa
-          p={[0.4, 1.08, 0]}
-          s={[0.125, 0.2, 0.145]}
-          c="#4b5563"
-          rot={[0, 0, -0.78]}
-        />
-      )}
-      <Caixa p={[0.3, 0.98, 0]} s={[0.1, 0.1, 0.1]} c={COR.pele} />
+    <group ref={refOmbro} position={[lado * 0.31, 1.52, 0]}>
+      <Caixa p={[0, -0.17, 0]} s={[0.12, 0.34, 0.14]} c={COR.pele} />
+      <Caixa p={[0, -0.09, 0]} s={[0.17, 0.2, 0.18]} c={PRETO} />
+      <group ref={refCotovelo} position={[0, -0.34, 0]}>
+        <Caixa p={[0, -0.15, 0]} s={[0.11, 0.3, 0.13]} c={COR.pele} />
+        {tatuagem && (
+          <Caixa p={[0, -0.15, 0]} s={[0.125, 0.2, 0.145]} c="#4b5563" />
+        )}
+        <Caixa p={[0, -0.33, 0]} s={[0.1, 0.1, 0.1]} c={COR.pele} />
+        <group ref={refHalter} position={[0, -0.33, 0]} visible={false}>
+          <Halter p={[0, 0, 0]} carga={0.4} />
+        </group>
+      </group>
     </group>
   );
 }
 
-function Treinadora() {
+function PernaArt({
+  lado,
+  refQuadril,
+  refJoelho,
+}: {
+  lado: 1 | -1;
+  refQuadril: (g: THREE.Group | null) => void;
+  refJoelho: (g: THREE.Group | null) => void;
+}) {
   return (
-    // de frente para a esteira (olhando para -x)
-    <group position={[1.0, 0, 0.5]} rotation={[0, -Math.PI / 2, 0]}>
-      {/* pernas, short e tênis */}
-      {[-1, 1].map((lado) => (
-        <group key={lado}>
-          <Caixa
-            p={[lado * 0.13, 0.345, 0]}
-            s={[0.16, 0.53, 0.18]}
-            c={COR.pele}
+    <group ref={refQuadril} position={[lado * 0.13, 0.66, 0]}>
+      <Caixa p={[0, -0.16, 0]} s={[0.16, 0.32, 0.18]} c={COR.pele} />
+      <group ref={refJoelho} position={[0, -0.32, 0]}>
+        <Caixa p={[0, -0.14, 0]} s={[0.15, 0.28, 0.17]} c={COR.pele} />
+        <Caixa p={[0, -0.3, 0.04]} s={[0.17, 0.08, 0.3]} c={PRETO} />
+      </group>
+    </group>
+  );
+}
+
+// ---- trajeto e posições (coordenadas do mundo) ----
+const FAIXA_Z = 0.9; // "corredor" livre na frente dos equipamentos
+const PARADA: [number, number] = [2.2, -0.8];
+const ENTRADA_X = [-1.7, 0.4, 3.3];
+const CHEGADA: [number, number][] = [
+  [-1.7, -0.63], // ao lado do banco
+  [0.4, -1.15], // em cima da esteira
+  [3.3, -2.1], // em frente ao rack de halteres
+];
+const DEITADA = { x: -2.6, y: -0.09, z: -0.63 }; // quadril sobre o banco
+
+type Estado = {
+  x: number;
+  z: number;
+  y: number;
+  rotY: number;
+  rotAlvo: number;
+  rota: [number, number][];
+  atual: number; // estação onde está (-1 = nenhuma / viajando)
+  destino: number;
+  ultimo: number | null;
+  deitar: number;
+  wAnd: number;
+  wCor: number;
+  wRos: number;
+  t: number;
+  faseSupino: number;
+  esteira: number;
+};
+
+function Boneca({
+  aberta,
+  barra,
+  faixas,
+}: {
+  aberta: number | null;
+  barra: RefGrupo;
+  faixas: RefGrupo;
+}) {
+  const abertaRef = useRef(aberta);
+  abertaRef.current = aberta;
+
+  const j = useRef<Record<string, THREE.Group | null>>({});
+  const est = useRef<Estado>({
+    x: PARADA[0],
+    z: PARADA[1],
+    y: 0,
+    rotY: -Math.PI / 2,
+    rotAlvo: -Math.PI / 2,
+    rota: [],
+    atual: -1,
+    destino: -1,
+    ultimo: null,
+    deitar: 0,
+    wAnd: 0,
+    wCor: 0,
+    wRos: 0,
+    t: 0,
+    faseSupino: 0,
+    esteira: 0,
+  });
+
+  const set = (nome: string) => (g: THREE.Group | null) => {
+    j.current[nome] = g;
+  };
+
+  useFrame((_, dt0) => {
+    const dt = Math.min(dt0, 0.05);
+    const s = est.current;
+    const g = j.current;
+    const a = abertaRef.current;
+    s.t += dt;
+
+    // --- novo clique: monta o trajeto até a estação ---
+    if (a !== s.ultimo) {
+      s.ultimo = a;
+      if (a !== null && a !== s.atual) {
+        const pts: [number, number][] = [];
+        if (Math.abs(s.z - FAIXA_Z) > 0.2) pts.push([s.x, FAIXA_Z]);
+        pts.push([ENTRADA_X[a], FAIXA_Z]);
+        pts.push(CHEGADA[a]);
+        s.rota = pts;
+        s.destino = a;
+        s.atual = -1;
+      }
+    }
+
+    // --- anda pelo trajeto (só depois de levantar do banco) ---
+    let andando = false;
+    if (s.rota.length > 0 && s.deitar < 0.15) {
+      const [tx, tz] = s.rota[0];
+      const dx = tx - s.x;
+      const dz = tz - s.z;
+      const dist = Math.hypot(dx, dz);
+      if (dist < 0.03) {
+        s.rota.shift();
+        if (s.rota.length === 0) s.atual = s.destino;
+      } else {
+        const passo = Math.min(dist, 1.6 * dt);
+        s.x += (dx / dist) * passo;
+        s.z += (dz / dist) * passo;
+        s.rotAlvo = Math.atan2(dx, dz);
+        andando = true;
+      }
+    }
+
+    // --- ação ativa: só quando chegou e o cartão está aberto ---
+    const acao =
+      s.rota.length === 0 && s.atual >= 0 && a === s.atual ? s.atual : -1;
+    if (acao === 0) s.rotAlvo = 0;
+    if (acao === 1 || acao === 2) s.rotAlvo = Math.PI;
+
+    // gira pelo menor caminho
+    const dif = Math.atan2(
+      Math.sin(s.rotAlvo - s.rotY),
+      Math.cos(s.rotAlvo - s.rotY),
+    );
+    s.rotY += dif * (1 - Math.exp(-8 * dt));
+
+    // pesos (suavizam a troca entre animações)
+    const k = 1 - Math.exp(-7 * dt);
+    s.wAnd += ((andando ? 1 : 0) - s.wAnd) * k;
+    s.wCor += ((acao === 1 ? 1 : 0) - s.wCor) * k;
+    s.wRos += ((acao === 2 ? 1 : 0) - s.wRos) * k;
+    s.deitar += ((acao === 0 ? 1 : 0) - s.deitar) * (1 - Math.exp(-3 * dt));
+
+    // degrau da esteira
+    const naEsteira = Math.abs(s.x - 0.4) < 0.25 && s.z < -0.15 && s.z > -2.2;
+    s.y += ((naEsteira ? 0.47 : 0) - s.y) * (1 - Math.exp(-12 * dt));
+
+    const { wAnd, wCor, wRos } = s;
+    const wSup = s.deitar;
+    const t = s.t;
+
+    // --- raiz: posição no mundo (mistura "em pé" e "deitada no banco") ---
+    const raiz = g.raiz;
+    if (raiz) {
+      const bob = Math.abs(Math.sin(t * 11)) * 0.04 * wCor;
+      raiz.position.set(
+        s.x + (DEITADA.x - s.x) * wSup,
+        s.y + (DEITADA.y - s.y) * wSup + bob,
+        s.z + (DEITADA.z - s.z) * wSup,
+      );
+      raiz.rotation.y = s.rotY;
+    }
+    if (g.pivo) g.pivo.rotation.x = -(Math.PI / 2) * wSup;
+    if (g.tronco) g.tronco.rotation.x = 0.18 * wCor + 0.05 * wAnd;
+
+    // --- pernas ---
+    const sp = Math.sin(t * 7) * wAnd * 0.55 + Math.sin(t * 11) * wCor * 0.95;
+    const jE =
+      wAnd * 0.6 * Math.max(0, Math.cos(t * 7)) +
+      wCor * (0.3 + 0.9 * Math.max(0, Math.cos(t * 11)));
+    const jD =
+      wAnd * 0.6 * Math.max(0, -Math.cos(t * 7)) +
+      wCor * (0.3 + 0.9 * Math.max(0, -Math.cos(t * 11)));
+    if (g.quadrilE) g.quadrilE.rotation.x = -sp;
+    if (g.quadrilD) g.quadrilD.rotation.x = sp;
+    if (g.joelhoE) g.joelhoE.rotation.x = jE;
+    if (g.joelhoD) g.joelhoD.rotation.x = jD;
+
+    // --- braços ---
+    const balanco =
+      Math.sin(t * 7) * wAnd * 0.5 + Math.sin(t * 11) * wCor * 0.9;
+    const dobra = -(0.2 * wAnd + 1.4 * wCor);
+    const cicloRosca = 0.5 + 0.5 * Math.sin(t * Math.PI);
+    const roscaE = -(0.1 + 1.15 * 2 * cicloRosca) * wRos;
+    const roscaD = -(0.1 + 1.15 * 2 * (1 - cicloRosca)) * wRos;
+
+    // supino: a barra sobe/desce e as mãos a seguem (cinemática inversa)
+    if (wSup > 0.95) s.faseSupino += (dt / 2.6) * Math.PI * 2;
+    const alturaBarra =
+      1.3 - 0.33 * (0.5 - 0.5 * Math.cos(s.faseSupino)) * wSup;
+    if (barra.current) barra.current.position.y = alturaBarra - 1.3;
+    const [ikO, ikC] = ik(0, alturaBarra * 1.03 - 0.69);
+
+    const resto = 1 - wSup;
+    const ombroE = resto * (balanco - 0.04) + wSup * ikO;
+    const ombroD = resto * (-balanco - 0.04) + wSup * ikO;
+    const cotE = resto * (dobra + roscaE) + wSup * ikC;
+    const cotD = resto * (dobra + roscaD) + wSup * ikC;
+    if (g.ombroE) g.ombroE.rotation.x = ombroE;
+    if (g.ombroD) g.ombroD.rotation.x = ombroD;
+    if (g.cotoveloE) g.cotoveloE.rotation.x = cotE;
+    if (g.cotoveloD) g.cotoveloD.rotation.x = cotD;
+    if (g.halterE) g.halterE.visible = wRos > 0.1;
+    if (g.halterD) g.halterD.visible = wRos > 0.1;
+
+    // --- esteira: faixas correm para trás enquanto ela corre ---
+    s.esteira += dt * 1.8 * wCor;
+    if (faixas.current) faixas.current.position.z = s.esteira % 0.4;
+  });
+
+  return (
+    <group
+      ref={set("raiz")}
+      position={[PARADA[0], 0, PARADA[1]]}
+      rotation={[0, -Math.PI / 2, 0]}
+    >
+      {/* pivô de deitar: gira em torno do quadril */}
+      <group ref={set("pivo")} position={[0, 0.78, 0]}>
+        <group position={[0, -0.78, 0]}>
+          {/* pernas, short e tênis */}
+          <PernaArt
+            lado={-1}
+            refQuadril={set("quadrilE")}
+            refJoelho={set("joelhoE")}
           />
-          <Caixa
-            p={[lado * 0.13, 0.04, 0.04]}
-            s={[0.17, 0.08, 0.3]}
-            c={PRETO}
+          <PernaArt
+            lado={1}
+            refQuadril={set("quadrilD")}
+            refJoelho={set("joelhoD")}
           />
+          <Caixa p={[0, 0.78, 0]} s={[0.54, 0.34, 0.32]} c={PRETO} />
+
+          {/* tronco, braços e cabeça (inclina a partir do quadril) */}
+          <group ref={set("tronco")} position={[0, 0.78, 0]}>
+            <group position={[0, -0.78, 0]}>
+              {/* camiseta preta + colar */}
+              <Caixa p={[0, 1.25, 0]} s={[0.52, 0.7, 0.3]} c={PRETO} />
+              <Caixa p={[0, 1.56, 0.155]} s={[0.14, 0.02, 0.01]} c="#f59e0b" />
+              <Caixa p={[0, 1.5, 0.16]} s={[0.04, 0.07, 0.02]} c="#f59e0b" />
+
+              <BracoArt
+                lado={1}
+                refOmbro={set("ombroE")}
+                refCotovelo={set("cotoveloE")}
+                refHalter={set("halterE")}
+              />
+              <BracoArt
+                lado={-1}
+                tatuagem
+                refOmbro={set("ombroD")}
+                refCotovelo={set("cotoveloD")}
+                refHalter={set("halterD")}
+              />
+
+              {/* cabeça e rosto */}
+              <mesh position={[0, 1.82, 0]}>
+                <sphereGeometry args={[0.2, 7, 5]} />
+                <Mat c={COR.pele} />
+              </mesh>
+              <Caixa
+                p={[-0.07, 1.84, 0.185]}
+                s={[0.04, 0.04, 0.03]}
+                c="#111827"
+              />
+              <Caixa
+                p={[0.07, 1.84, 0.185]}
+                s={[0.04, 0.04, 0.03]}
+                c="#111827"
+              />
+              <Caixa p={[0, 1.76, 0.19]} s={[0.09, 0.03, 0.03]} c="#dc2626" />
+
+              {/* cabelo cacheado, preso no alto */}
+              <mesh position={[0, 1.84, -0.01]}>
+                <sphereGeometry
+                  args={[0.215, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2]}
+                />
+                <Mat c="#3b0a1c" />
+              </mesh>
+              {CACHOS.map((cacho, i) => (
+                <mesh key={i} position={cacho.p}>
+                  <icosahedronGeometry args={[cacho.r, 0]} />
+                  <Mat c={cacho.c} />
+                </mesh>
+              ))}
+            </group>
+          </group>
         </group>
-      ))}
-      <Caixa p={[0, 0.78, 0]} s={[0.54, 0.34, 0.32]} c={PRETO} />
-
-      {/* camiseta preta + colar */}
-      <Caixa p={[0, 1.25, 0]} s={[0.52, 0.7, 0.3]} c={PRETO} />
-      <Caixa p={[0, 1.56, 0.155]} s={[0.14, 0.02, 0.01]} c="#f59e0b" />
-      <Caixa p={[0, 1.5, 0.16]} s={[0.04, 0.07, 0.02]} c="#f59e0b" />
-
-      {/* braços (um com tatuagem) */}
-      <Braco lado={1} />
-      <Braco lado={-1} tatuagem />
-
-      {/* cabeça e rosto */}
-      <mesh position={[0, 1.82, 0]}>
-        <sphereGeometry args={[0.2, 7, 5]} />
-        <Mat c={COR.pele} />
-      </mesh>
-      <Caixa p={[-0.07, 1.84, 0.185]} s={[0.04, 0.04, 0.03]} c="#111827" />
-      <Caixa p={[0.07, 1.84, 0.185]} s={[0.04, 0.04, 0.03]} c="#111827" />
-      <Caixa p={[0, 1.76, 0.19]} s={[0.09, 0.03, 0.03]} c="#dc2626" />
-
-      {/* cabelo cacheado, preso no alto */}
-      <mesh position={[0, 1.84, -0.01]}>
-        <sphereGeometry args={[0.215, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <Mat c="#3b0a1c" />
-      </mesh>
-      {CACHOS.map((cacho, i) => (
-        <mesh key={i} position={cacho.p}>
-          <icosahedronGeometry args={[cacho.r, 0]} />
-          <Mat c={cacho.c} />
-        </mesh>
-      ))}
+      </group>
     </group>
   );
 }
@@ -420,6 +695,38 @@ function Kettlebell({ p }: { p: V3 }) {
   );
 }
 
+function Quadro() {
+  const mapa = useTexture("/images/quadro.jpg");
+
+  mapa.colorSpace = THREE.SRGBColorSpace;
+  mapa.magFilter = THREE.NearestFilter; // pixels nítidos, estilo 144p
+  mapa.minFilter = THREE.NearestFilter;
+  mapa.generateMipmaps = false;
+
+  return (
+    <mesh position={[-4.935, 2.3, 0.4]} rotation={[0, Math.PI / 2, 0]}>
+      <planeGeometry args={[1.6, 0.9]} />
+      <meshBasicMaterial map={mapa} toneMapped={false} />
+    </mesh>
+  );
+}
+
+function Poster() {
+  const mapa = useTexture("/images/poster.jpg");
+
+  mapa.colorSpace = THREE.SRGBColorSpace;
+  mapa.magFilter = THREE.NearestFilter; // pixels nítidos, estilo 144p
+  mapa.minFilter = THREE.NearestFilter;
+  mapa.generateMipmaps = false;
+
+  return (
+    <mesh position={[-0.8, 2.1, -3.42]}>
+      <planeGeometry args={[2.84, 1.6]} />
+      <meshBasicMaterial map={mapa} toneMapped={false} />
+    </mesh>
+  );
+}
+
 function Sala() {
   return (
     <>
@@ -431,13 +738,18 @@ function Sala() {
       <Caixa p={[0, 0.12, -3.47]} s={[10, 0.24, 0.06]} c={COR.rodape} />
       <Caixa p={[-4.97, 0.12, 0]} s={[0.06, 0.24, 7]} c={COR.rodape} />
 
-      {/* espelho na parede do fundo */}
-      <Caixa p={[-0.8, 2.1, -3.47]} s={[3.3, 1.8, 0.04]} c={COR.escuro} />
-      <Caixa p={[-0.8, 2.1, -3.44]} s={[3.1, 1.6, 0.03]} c={COR.espelho} />
+      {/* espelho (pôster) na parede do fundo */}
+      <Caixa p={[-0.8, 2.1, -3.47]} s={[3.04, 1.8, 0.04]} c={COR.escuro} />
+      <Caixa p={[-0.8, 2.1, -3.44]} s={[2.84, 1.6, 0.03]} c={COR.espelho} />
+      <Suspense fallback={null}>
+        <Poster />
+      </Suspense>
 
       {/* quadro na parede esquerda */}
       <Caixa p={[-4.96, 2.3, 0.4]} s={[0.04, 1.1, 1.8]} c={COR.verde} />
-      <Caixa p={[-4.93, 2.3, 0.4]} s={[0.02, 0.9, 1.6]} c={COR.verdeClaro} />
+      <Suspense fallback={null}>
+        <Quadro />
+      </Suspense>
 
       <Planta />
 
@@ -556,50 +868,36 @@ function ConteudoCartao({ dados }: { dados: EstacaoDados }) {
   );
 }
 
-// Cartão de texto: filho do marcador aberto (herda a posição e fica por cima
-// dos outros). No desktop abre ao lado; no celular o Projetor o centraliza
-// logo abaixo (ou acima) do marcador, perto do modelo 3D.
-const Cartao = forwardRef<
-  HTMLDivElement,
-  { dados: EstacaoDados; pequeno: boolean }
->(function Cartao({ dados, pequeno }, ref) {
-  const [mostrar, setMostrar] = useState(false);
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMostrar(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
+// Painel de texto: fica acima da cena (em fluxo normal), então nunca cobre
+// a sala nem a animação. Sem nada aberto, mostra uma dica.
+function Painel({ dados }: { dados: EstacaoDados | null }) {
   return (
     <div
-      ref={ref}
-      className={`pointer-events-none absolute rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-opacity duration-200 ${
-        mostrar ? "opacity-100" : "opacity-0"
-      } ${
-        pequeno
-          ? "left-0 top-0 text-center"
-          : `top-0 w-64 -translate-y-1/2 text-left ${
-              dados.lado === "dir" ? "left-26px" : "right-26px"
-            }`
-      }`}
+      data-ponto
+      className="mx-auto flex min-h-34 w-full max-w-xl items-center justify-center px-4 py-2 sm:min-h-26"
     >
-      <ConteudoCartao dados={dados} />
+      {dados ? (
+        <div
+          key={dados.id}
+          className="animate-[painel-entra_220ms_ease-out] w-full rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-xl"
+        >
+          <ConteudoCartao dados={dados} />
+        </div>
+      ) : (
+        <p className="text-center text-sm text-slate-500">
+          Clique (ou toque) nos pontos numerados para ver os detalhes.
+        </p>
+      )}
     </div>
   );
-});
+}
 
 // Projeta os marcadores 3D para a tela a cada frame e move os elementos HTML.
 // (DOM normal do React, sem o <Html> do drei: o botão sempre existe no DOM.)
 function Projetor({
   pontos,
-  cartao,
-  aberta,
-  pequeno,
 }: {
   pontos: MutableRefObject<(HTMLDivElement | null)[]>;
-  cartao: MutableRefObject<HTMLDivElement | null>;
-  aberta: number | null;
-  pequeno: boolean;
 }) {
   const v = useMemo(() => new THREE.Vector3(), []);
 
@@ -614,21 +912,6 @@ function Projetor({
       const y = (-v.y * 0.5 + 0.5) * size.height;
       el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
       el.style.visibility = v.z < 1 ? "visible" : "hidden";
-
-      // celular: cartão centralizado na tela, colado ao marcador
-      if (pequeno && aberta === i && cartao.current) {
-        const c = cartao.current;
-        const larg = Math.min(288, size.width - 32);
-        const esq = Math.min(
-          Math.max(x - larg / 2, 16),
-          size.width - 16 - larg,
-        );
-        const alt = c.offsetHeight;
-        const abaixo = y + 30 + alt <= size.height - 8;
-        c.style.width = `${larg}px`;
-        c.style.left = `${(esq - x).toFixed(1)}px`;
-        c.style.top = `${abaixo ? 30 : -30 - alt}px`;
-      }
     });
   });
 
@@ -786,24 +1069,20 @@ function Cena({
   aberta,
   hover,
   reduzir,
-  pequeno,
   pontos,
-  cartao,
 }: {
   sobre: number | null;
   aberta: number | null;
   hover: boolean;
   reduzir: boolean;
-  pequeno: boolean;
   pontos: MutableRefObject<(HTMLDivElement | null)[]>;
-  cartao: MutableRefObject<HTMLDivElement | null>;
 }) {
+  const barra = useRef<THREE.Group>(null);
+  const faixas = useRef<THREE.Group>(null);
+
   const estacoes: ReactNode[] = [
-    <Supino key="s" />,
-    <group key="e">
-      <Esteira />
-      <Treinadora />
-    </group>,
+    <Supino key="s" barra={barra} />,
+    <Esteira key="e" faixas={faixas} />,
     <RackHalteres key="r" />,
   ];
 
@@ -814,14 +1093,10 @@ function Cena({
       <directionalLight position={[6, 9, 5]} intensity={2.2} />
 
       <Camera hover={hover} reduzir={reduzir} />
-      <Projetor
-        pontos={pontos}
-        cartao={cartao}
-        aberta={aberta}
-        pequeno={pequeno}
-      />
+      <Projetor pontos={pontos} />
 
       <Sala />
+      <Boneca aberta={aberta} barra={barra} faixas={faixas} />
 
       {ESTACOES.map((e, i) => (
         <Estacao key={e.id} dados={e} ativa={sobre === i || aberta === i}>
@@ -846,29 +1121,17 @@ function Cena({
 export default function AcademiaCena() {
   const caixa = useRef<HTMLDivElement>(null);
   const pontos = useRef<(HTMLDivElement | null)[]>([]);
-  const cartao = useRef<HTMLDivElement | null>(null);
   const [visivel, setVisivel] = useState(false);
   // sobre = marcador sob o mouse (só destaca); aberta = marcador clicado (mostra o texto)
   const [sobre, setSobre] = useState<number | null>(null);
   const [aberta, setAberta] = useState<number | null>(null);
-  const [modo, setModo] = useState({
-    hover: true,
-    reduzir: false,
-    pequeno: false,
-  });
+  const [modo, setModo] = useState({ hover: true, reduzir: false });
 
   useEffect(() => {
-    const telaPequena = window.matchMedia("(max-width: 639px)");
-    const atualizar = () =>
-      setModo({
-        hover: window.matchMedia("(hover: hover)").matches,
-        reduzir: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-        pequeno: telaPequena.matches,
-      });
-
-    atualizar();
-    telaPequena.addEventListener("change", atualizar);
-    return () => telaPequena.removeEventListener("change", atualizar);
+    setModo({
+      hover: window.matchMedia("(hover: hover)").matches,
+      reduzir: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    });
   }, []);
 
   useEffect(() => {
@@ -903,52 +1166,49 @@ export default function AcademiaCena() {
   }, [aberta]);
 
   return (
-    <div
-      ref={caixa}
-      className="relative h-[min(78vh,720px)] min-h-460px w-full"
-    >
-      <Canvas
-        frameloop={visivel ? "always" : "never"}
-        dpr={[1, 1.5]}
-        camera={{ fov: FOV, position: [6.5, 5.2, 9], near: 0.1, far: 80 }}
-      >
-        <Cena
-          sobre={sobre}
-          aberta={aberta}
-          hover={modo.hover}
-          reduzir={modo.reduzir}
-          pequeno={modo.pequeno}
-          pontos={pontos}
-          cartao={cartao}
-        />
-      </Canvas>
+    <div className="flex h-[min(88vh,820px)] min-h-140 w-full flex-col">
+      {/* texto: acima da cena, não cobre a animação */}
+      <Painel dados={aberta === null ? null : ESTACOES[aberta]} />
 
-      {/* Marcadores: HTML comum por cima do canvas, posicionados pelo Projetor */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {ESTACOES.map((e, i) => (
-          <div
-            key={e.id}
-            data-ponto
-            ref={(el) => {
-              pontos.current[i] = el;
-            }}
-            className="invisible absolute left-0 top-0"
-            style={{ zIndex: aberta === i ? 30 : 10 }}
-          >
-            <div className="pointer-events-auto absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2">
-              <Marcador
-                dados={e}
-                sobre={sobre === i}
-                aberta={aberta === i}
-                onSobre={(valor) => setSobre(valor ? i : null)}
-                onClique={() => setAberta((a) => (a === i ? null : i))}
-              />
+      <div ref={caixa} className="relative min-h-0 flex-1">
+        <Canvas
+          frameloop={visivel ? "always" : "never"}
+          dpr={[1, 1.5]}
+          camera={{ fov: FOV, position: [6.5, 5.2, 9], near: 0.1, far: 80 }}
+        >
+          <Cena
+            sobre={sobre}
+            aberta={aberta}
+            hover={modo.hover}
+            reduzir={modo.reduzir}
+            pontos={pontos}
+          />
+        </Canvas>
+
+        {/* Marcadores: HTML comum por cima do canvas, posicionados pelo Projetor */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          {ESTACOES.map((e, i) => (
+            <div
+              key={e.id}
+              data-ponto
+              ref={(el) => {
+                pontos.current[i] = el;
+              }}
+              className="invisible absolute left-0 top-0"
+              style={{ zIndex: aberta === i ? 30 : 10 }}
+            >
+              <div className="pointer-events-auto absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2">
+                <Marcador
+                  dados={e}
+                  sobre={sobre === i}
+                  aberta={aberta === i}
+                  onSobre={(valor) => setSobre(valor ? i : null)}
+                  onClique={() => setAberta((a) => (a === i ? null : i))}
+                />
+              </div>
             </div>
-            {aberta === i && (
-              <Cartao ref={cartao} dados={e} pequeno={modo.pequeno} />
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

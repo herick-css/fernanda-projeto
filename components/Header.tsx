@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 
 export default function Header() {
   const conteudoRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const reduzirMovimento = useReducedMotion();
 
   // Informa ao CSS a altura do conteúdo para o parallax.
@@ -23,6 +24,23 @@ export default function Header() {
     return () => observer.disconnect();
   }, []);
 
+  // Pausa o vídeo quando o header sai da tela (poupa CPU/bateria no resto da página).
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(([entrada]) => {
+      if (entrada.isIntersecting) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+    observer.observe(video);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <header
       id="header-principal"
@@ -30,6 +48,7 @@ export default function Header() {
     >
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <video
+          ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
           autoPlay
           muted
