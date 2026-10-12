@@ -55,10 +55,10 @@ export default function Home() {
 
           <ScrollReveal
             id="sobre-mim-conteudo"
-            className="relative z-10 min-h-[calc(100dvh-var(--navbar-height,0px))] flex items-center"
+            className="relative z-10 min-h-[calc(100dvh-var(--navbar-height,0px))] flex items-stretch *:flex"
           >
-            <div className="section-container w-full grid items-center gap-10 md:grid-cols-2 md:gap-16">
-              <div>
+            <div className="section-container w-full grid items-end gap-10 pb-0 md:grid-cols-2 md:gap-16">
+              <div className="self-center">
                 <p className="eyebrow">Sobre mim</p>
 
                 <HeadingSobre />
@@ -90,18 +90,19 @@ export default function Home() {
         </section>
 
         <ScrollReveal
-          id="trabalhos"
+          id="mentoria"
           aria-labelledby="titulo-trabalhos"
-          className="relative section-anchor bg-[#f6f8f7] z-10 min-h-[calc(100dvh-var(--navbar-height,0px))]  flex items-center "
+          className="relative section-anchor bg-[#f6f8f7] z-10 min-h-[calc(100dvh-var(--navbar-height,0px))]  flex items-center"
         >
           <div className="section-container">
-            <p className="eyebrow">Trabalhos</p>
+            <p className="eyebrow">Mentoria</p>
             <h2 id="titulo-trabalhos" className="section-title">
               Treino com propósito.
             </h2>
             <p className="section-description">
-              Uma apresentação inicial dos serviços. As modalidades serão
-              ajustadas aos atendimentos oferecidos pela Fernanda.
+              Um corpo sauvadel e uma mente pronta para treinos não se constrói
+              sem um planejamento ou orientação adequada, por isso que treinando
+              comigo, seguiremos um modelo de:
             </p>
             <Academia />
           </div>

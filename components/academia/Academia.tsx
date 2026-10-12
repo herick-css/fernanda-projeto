@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { ESTACOES } from "./dados";
 
-// A cena 3D só carrega no navegador (three não roda no servidor)
 const AcademiaCena = dynamic(() => import("./AcademiaCena"), {
   ssr: false,
   loading: () => (
@@ -16,7 +15,6 @@ export default function Academia() {
     <div>
       <AcademiaCena />
 
-      {/* Mesmo conteúdo em texto, para leitores de tela e buscadores */}
       <ul className="sr-only">
         {ESTACOES.map((e) => (
           <li key={e.id}>

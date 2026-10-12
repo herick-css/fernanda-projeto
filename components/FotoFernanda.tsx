@@ -60,7 +60,7 @@ export default function FotoFernanda() {
       onPointerMove={mover}
       onPointerLeave={resetar}
       onPointerCancel={resetar}
-      className="w-full"
+      className="w-full translate-y-[3%]"
     >
       {/* Entrada da foto. */}
       <motion.div
