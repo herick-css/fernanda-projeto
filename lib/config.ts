@@ -9,9 +9,11 @@ export const config = {
   calendarId: "fernandafeff3@gmail.com",
   timeZone: "America/Manaus",
   utcOffset: "-04:00", // Manaus não tem horário de verão
-  diasAFrente: 14,
+  // A agenda é semanal: mostra hoje + 6 dias (ex.: qui 12 até qua 18).
+  diasAFrente: 6,
   duracaoMin: 60,
   // 0 = domingo, 1 = segunda ... 6 = sábado. Faixas no formato [início, fim].
+  // Dia sem faixa (domingo) aparece como "folga".
   expediente: {
     1: [["15:00", "22:00"]],
     2: [["15:00", "22:00"]],

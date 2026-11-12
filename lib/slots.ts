@@ -77,9 +77,8 @@ export function gerarSlots(ocupados: Ocupado[]): Dia[] {
       }
     }
 
-    if (slots.length > 0) {
-      dias.push({ data, label: rotulo.format(meioDia(data)), slots });
-    }
+    // Dias sem expediente (folga) também entram, com slots vazios.
+    dias.push({ data, label: rotulo.format(meioDia(data)), slots });
   }
 
   return dias;

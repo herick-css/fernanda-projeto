@@ -9,6 +9,11 @@ export default function FormAgendamento({ horario, onVoltar }: Props) {
   const [idade, setIdade] = useState("");
   const [praticou, setPraticou] = useState<"sim" | "nao" | "">("");
   const [lesao, setLesao] = useState("");
+  const [sexo, setSexo] = useState<"Masculino" | "Feminino" | "">("");
+  const [altura, setAltura] = useState("");
+  const [peso, setPeso] = useState("");
+  const [grupo, setGrupo] = useState<"Sozinho(a)" | "Em dupla" | "Em trio" | "">("");
+  const [indicacao, setIndicacao] = useState("");
 
   function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -17,9 +22,16 @@ export default function FormAgendamento({ horario, onVoltar }: Props) {
       `Olá! Quero agendar o horário: ${horario}`,
       `Nome: ${nome}`,
       `Idade: ${idade}`,
+      `Sexo: ${sexo}`,
+      altura.trim() && `Altura: ${altura.trim()}`,
+      peso.trim() && `Peso: ${peso.trim()}`,
+      `Vai treinar: ${grupo}`,
       `Já praticou atividade física: ${praticou === "sim" ? "Sim" : "Não"}`,
       `Lesões/limitações: ${lesao.trim() || "Nenhuma"}`,
-    ].join("\n");
+      indicacao && `Indicação médica/fisioterapeuta: ${indicacao}`,
+    ]
+      .filter(Boolean) // campos opcionais em branco não entram na mensagem
+      .join("\n");
 
     // Os dados vão direto para o WhatsApp do cliente; nada é guardado no servidor.
     window.open(
@@ -72,6 +84,65 @@ export default function FormAgendamento({ horario, onVoltar }: Props) {
       </label>
 
       <fieldset className="text-sm font-medium">
+        <legend>Sexo</legend>
+        <div className="mt-2 flex gap-6 font-normal">
+          {(["Masculino", "Feminino"] as const).map((v) => (
+            <label key={v} className="flex items-center gap-2">
+              <input
+                required
+                type="radio"
+                name="sexo"
+                checked={sexo === v}
+                onChange={() => setSexo(v)}
+              />
+              {v}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <div className="grid grid-cols-2 gap-4">
+        <label className="block text-sm font-medium">
+          Altura <span className="font-normal text-slate-500">(opcional)</span>
+          <input
+            value={altura}
+            onChange={(e) => setAltura(e.target.value)}
+            className={campo}
+            inputMode="decimal"
+            placeholder="Ex.: 1,65 m"
+          />
+        </label>
+        <label className="block text-sm font-medium">
+          Peso <span className="font-normal text-slate-500">(opcional)</span>
+          <input
+            value={peso}
+            onChange={(e) => setPeso(e.target.value)}
+            className={campo}
+            inputMode="decimal"
+            placeholder="Ex.: 70 kg"
+          />
+        </label>
+      </div>
+
+      <fieldset className="text-sm font-medium">
+        <legend>Você treinará sozinho(a), em dupla ou em trio?</legend>
+        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2 font-normal">
+          {(["Sozinho(a)", "Em dupla", "Em trio"] as const).map((v) => (
+            <label key={v} className="flex items-center gap-2">
+              <input
+                required
+                type="radio"
+                name="grupo"
+                checked={grupo === v}
+                onChange={() => setGrupo(v)}
+              />
+              {v}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="text-sm font-medium">
         <legend>Já praticou atividade física antes?</legend>
         <div className="mt-2 flex gap-6 font-normal">
           {(["sim", "nao"] as const).map((v) => (
@@ -98,6 +169,22 @@ export default function FormAgendamento({ horario, onVoltar }: Props) {
           className={campo}
           placeholder="Se não, pode deixar em branco"
         />
+      </label>
+
+      <label className="block text-sm font-medium">
+        Está começando por indicação médica ou de fisioterapeuta?{" "}
+        <span className="font-normal text-slate-500">(opcional)</span>
+        <select
+          value={indicacao}
+          onChange={(e) => setIndicacao(e.target.value)}
+          className={`${campo} bg-white`}
+        >
+          <option value="">Prefiro não informar</option>
+          <option value="Sim, médica">Sim, indicação médica</option>
+          <option value="Sim, de fisioterapeuta">Sim, de fisioterapeuta</option>
+          <option value="Sim, de ambos">Sim, dos dois</option>
+          <option value="Não">Não</option>
+        </select>
       </label>
 
       <button

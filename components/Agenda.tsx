@@ -17,7 +17,10 @@ export default function Agenda() {
       .then(async (r) => {
         const json = await r.json();
         if (!r.ok) throw new Error(json.erro ?? "Erro ao carregar horários.");
-        setDias(json.dias as Dia[]);
+        const lista = json.dias as Dia[];
+        setDias(lista);
+        // Abre no primeiro dia que tem expediente (pula a folga).
+        setDiaAtivo(Math.max(0, lista.findIndex((d) => d.slots.length > 0)));
       })
       .catch((e: Error) => setErro(e.message));
   }, []);
@@ -28,7 +31,7 @@ export default function Agenda() {
   if (!dias) {
     return <p className="text-slate-500">Carregando horários…</p>;
   }
-  if (dias.length === 0) {
+  if (!dias.some((d) => d.slots.length > 0)) {
     return <p className="text-slate-500">Nenhum horário disponível no momento.</p>;
   }
 
@@ -48,21 +51,29 @@ export default function Agenda() {
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-3" role="tablist">
         {dias.map((d, i) => {
           const livres = d.slots.filter((s) => s.livre).length;
+          const folga = d.slots.length === 0;
           return (
             <button
               key={d.data}
               role="tab"
               aria-selected={i === diaAtivo}
+              disabled={folga}
               onClick={() => setDiaAtivo(i)}
               className={`shrink-0 rounded-xl border px-4 py-2 text-sm capitalize transition ${
-                i === diaAtivo
-                  ? "border-emerald-600 bg-emerald-600 text-white"
-                  : "border-slate-200 bg-white hover:border-emerald-400"
+                folga
+                  ? "cursor-not-allowed border-dashed border-slate-200 bg-slate-50 text-slate-400"
+                  : i === diaAtivo
+                    ? "border-emerald-600 bg-emerald-600 text-white"
+                    : "border-slate-200 bg-white hover:border-emerald-400"
               }`}
             >
               <span className="block font-medium">{d.label}</span>
               <span className="block text-xs opacity-80">
-                {livres > 0 ? `${livres} livre${livres > 1 ? "s" : ""}` : "lotado"}
+                {folga
+                  ? "folga"
+                  : livres > 0
+                    ? `${livres} livre${livres > 1 ? "s" : ""}`
+                    : "lotado"}
               </span>
             </button>
           );
