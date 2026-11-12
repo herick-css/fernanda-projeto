@@ -64,12 +64,13 @@ export default function Navbar() {
       aria-label="Navegação principal"
       className="navbar-fundo fixed inset-x-0 top-0 z-30"
     >
-      <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-1 px-4 py-6 sm:gap-x-8">
+      {/* Uma linha só: no celular os links rolam para o lado (com as bordas esmaecidas). */}
+      <div className="nav-rolagem relative mx-auto flex max-w-6xl items-center justify-center-safe gap-x-6 overflow-x-auto px-5 py-4 sm:gap-x-8 sm:py-6">
         {links.map((link) => (
           <a
             key={link.href}
             href={link.href}
-            className={`rounded-md px-1 py-2 text-sm font-semibold transition-colors hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand ${
+            className={`shrink-0 whitespace-nowrap rounded-md px-1 py-2 text-sm font-semibold transition-colors hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand ${
               link.href === "#horarios" ? "text-brand" : "text-white/80"
             }`}
           >

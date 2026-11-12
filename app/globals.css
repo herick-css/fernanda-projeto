@@ -13,7 +13,7 @@ body {
   margin: 0;
 }
 
-/* Compensa a altura real do navbar em todas as âncorhttp://localhost:3000as. */
+/* Compensa a altura real do navbar em todas as âncoras. */
 .section-anchor {
   scroll-margin-top: var(--navbar-height, 0px);
 }
@@ -231,5 +231,20 @@ section[data-dark] .eyebrow {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Navbar em uma linha: esconde a barra de rolagem e esmaece as bordas
+   quando os links não cabem (celular). */
+.nav-rolagem {
+  scrollbar-width: none;
+}
+.nav-rolagem::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 767px) {
+  .nav-rolagem {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 40px), transparent);
   }
 }

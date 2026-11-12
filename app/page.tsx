@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Agenda from "@/components/Agenda";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
@@ -8,6 +7,9 @@ import FotoFernanda from "@/components/FotoFernanda";
 import BokehBackground from "@/components/BokehBackground";
 import HeadingSobre from "@/components/HeadingSobre";
 import Academia from "@/components/academia/Academia";
+import Footer from "@/components/Footer";
+import { config } from "@/lib/config";
+import { resumoExpediente } from "@/lib/expediente";
 
 const links = [
   { href: "#sobre-mim", label: "Sobre mim" },
@@ -37,6 +39,18 @@ const trabalhos = [
     texto:
       "Um processo de acompanhamento para revisar o treino e construir consistência na sua rotina.",
   },
+];
+
+// Textos dos passos do agendamento (gerados a partir do expediente em lib/config.ts).
+const passos = [
+  {
+    titulo: "Escolha o dia",
+    texto: resumoExpediente()
+      .map((e) => `${e.dias}, das ${e.faixas}`)
+      .join(" · "),
+  },
+  { titulo: "Escolha o horário", texto: `Sessões de ${config.duracaoMin} minutos` },
+  { titulo: "Confirme no WhatsApp", texto: "Um formulário rápido e a mensagem já sai pronta" },
 ];
 
 export default function Home() {
@@ -185,64 +199,46 @@ export default function Home() {
 
         <section
           id="horarios"
+          data-dark
           aria-labelledby="titulo-horarios"
-          className="section-anchor bg-[#f6f8f7]"
+          className="section-anchor relative isolate flex min-h-[calc(100dvh-var(--navbar-height,0px))] items-center overflow-hidden bg-[#101312] text-white"
         >
-          <div className="section-container">
-            <p className="eyebrow">Agendar horário</p>
-            <h2 id="titulo-horarios" className="section-title">
-              Vamos começar?
-            </h2>
-            <p className="section-description">
-              Escolha um horário disponível e continue pelo WhatsApp. O
-              atendimento será confirmado diretamente com a Fernanda.
-            </p>
-            <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-8">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-32 -right-32 -z-10 size-96 rounded-full bg-brand/15 blur-3xl"
+          />
+          <div className="section-container grid w-full items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
+            <div>
+              <p className="eyebrow">Agendar horário</p>
+              <h2 id="titulo-horarios" className="section-title">
+                Vamos começar?
+              </h2>
+              <p className="mt-4 max-w-md leading-relaxed text-white/60">
+                O atendimento é confirmado diretamente com a Fernanda pelo
+                WhatsApp.
+              </p>
+              <ol className="mt-8 space-y-5">
+                {passos.map((passo, i) => (
+                  <li key={passo.titulo} className="flex gap-4">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-full border border-brand/40 text-sm font-bold text-brand">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="font-semibold">{passo.titulo}</p>
+                      <p className="text-sm text-white/50">{passo.texto}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/3 p-4 backdrop-blur sm:p-6">
               <Agenda />
             </div>
           </div>
         </section>
       </main>
 
-      <footer
-        id="contato"
-        aria-labelledby="titulo-contato"
-        className="section-anchor bg-black text-white h-[50vh]"
-      >
-        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-2">
-          <div>
-            <Image
-              src="/images/logo-fernanda.png"
-              alt="Fernanda Bezerra — Personal Trainer"
-              width={520}
-              height={138}
-              className="h-auto w-64 max-w-full"
-            />
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/50">
-              Treinamento personalizado. Um passo de cada vez, com orientação e
-              acompanhamento.
-            </p>
-          </div>
-          <div>
-            <h2 id="titulo-contato" className="text-xl font-bold">
-              Contato
-            </h2>
-            <p className="mt-4 text-sm text-white/50">
-              Contatos, local de atendimento e CREF serão adicionados aqui.
-            </p>
-            <a
-              href="#horarios"
-              className="mt-5 inline-block text-sm font-semibold text-brand underline-offset-4 hover:underline"
-            >
-              Solicitar horário pelo WhatsApp ↗
-            </a>
-          </div>
-        </div>
-        <div className="border-t border-white/10 px-6 py-6 text-center text-xs text-white/40">
-          © {new Date().getFullYear()} Fernanda Bezerra. Todos os direitos
-          reservados.
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }
