@@ -51,7 +51,7 @@ export default function FormAgendamento({ horario, onVoltar }: Props) {
         onClick={onVoltar}
         className="text-sm text-brand hover:underline"
       >
-        ← Escolher outro horário
+        Voltar e escolher outro horário
       </button>
 
       <p className="rounded-lg bg-brand/10 p-3 text-sm text-brand-light">

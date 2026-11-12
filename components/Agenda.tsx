@@ -39,7 +39,12 @@ export default function Agenda() {
         const lista = json.dias as Dia[];
         setDias(lista);
         // Abre no primeiro dia que tem expediente (pula a folga).
-        setDiaAtivo(Math.max(0, lista.findIndex((d) => d.slots.length > 0)));
+        setDiaAtivo(
+          Math.max(
+            0,
+            lista.findIndex((d) => d.slots.length > 0),
+          ),
+        );
       })
       .catch((e: Error) => setErro(e.message));
   }, []);
@@ -83,7 +88,7 @@ export default function Agenda() {
       <div
         role="tablist"
         aria-label="Dias da semana"
-        className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] md:mx-0 md:flex-col md:overflow-visible md:px-0 md:pb-0"
+        className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 scrollbar-none md:mx-0 md:flex-col md:overflow-visible md:px-0 md:pb-0"
       >
         {dias.map((d, i) => {
           const folga = d.slots.length === 0;
@@ -152,13 +157,17 @@ export default function Agenda() {
         </div>
 
         <div className="mt-6 md:mt-auto md:pt-6">
-        <button
-          disabled={!selecionado}
-          onClick={() => selecionado && setEscolha({ dia, slot: selecionado })}
-          className="w-full rounded-xl bg-brand py-3 font-bold text-black transition hover:bg-brand-light disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40"
-        >
-          {selecionado ? `Continuar com ${selecionado.hora}` : "Escolha um horário"}
-        </button>
+          <button
+            disabled={!selecionado}
+            onClick={() =>
+              selecionado && setEscolha({ dia, slot: selecionado })
+            }
+            className="w-full rounded-xl bg-brand py-3 font-bold text-black transition hover:bg-brand-light disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40"
+          >
+            {selecionado
+              ? `Continuar com ${selecionado.hora}`
+              : "Escolha um horário"}
+          </button>
         </div>
       </div>
     </div>

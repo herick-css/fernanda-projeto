@@ -4,8 +4,8 @@ Next.js (App Router) + TypeScript + Tailwind. Os horários ocupados vêm do
 **Google Calendar** da profissional; os livres são calculados a partir do
 expediente definido em `lib/config.ts`. Não há banco de dados.
 
-Fluxo: visitante vê os horários → clica num horário livre → preenche o
-formulário → abre o WhatsApp com a mensagem pronta (nada é salvo no servidor).
+Fluxo: visitante vê os horários > clica num horário livre > preenche o
+formulário > abre o WhatsApp com a mensagem pronta (nada é salvo no servidor).
 
 ## Rodando
 
@@ -31,13 +31,13 @@ Em produção, sem credenciais a API retorna erro.
    horários em que **não** estará disponível (aluno marcado, compromisso etc.).
 2. **Projeto no Google Cloud:** em console.cloud.google.com crie um projeto e
    ative a **Google Calendar API**.
-3. **Conta de serviço:** em *IAM e administrador → Contas de serviço*, crie
+3. **Conta de serviço:** em *IAM e administrador > Contas de serviço*, crie
    uma conta e gere uma **chave JSON**. Dela você usa `client_email` e
    `private_key`.
 4. **Compartilhe a agenda** com o e-mail da conta de serviço, com permissão
    **"Ver apenas disponível/ocupado"** (basta isso — o site nunca lê títulos
    nem nomes de clientes).
-5. Em *Configurações da agenda → Integrar agenda*, copie o **ID da agenda**.
+5. Em *Configurações da agenda > Integrar agenda*, copie o **ID da agenda**.
 6. Preencha `.env.local` (veja `.env.example`). Na hospedagem (ex.: Vercel),
    cadastre as mesmas variáveis em *Environment Variables*.
 

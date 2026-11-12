@@ -8,6 +8,7 @@ import BokehBackground from "@/components/BokehBackground";
 import HeadingSobre from "@/components/HeadingSobre";
 import Academia from "@/components/academia/Academia";
 import Footer from "@/components/Footer";
+import Planos from "@/components/Planos";
 import { config } from "@/lib/config";
 import { resumoExpediente } from "@/lib/expediente";
 
@@ -120,6 +121,40 @@ export default function Home() {
         </ScrollReveal>
 
         <section
+          id="depoimentos"
+          data-dark
+          aria-labelledby="titulo-depoimentos"
+          className="section-anchor flex min-h-[calc(100dvh-var(--navbar-height,0px))] items-center bg-[#101312] text-white"
+        >
+          <div className="section-container w-full">
+            <p className="eyebrow">Depoimentos</p>
+            <h2 id="titulo-depoimentos" className="section-title">
+              Quem treina, conta.
+            </h2>
+            <p className="mt-4 max-w-2xl leading-relaxed text-white/60">
+              Este espaço receberá relatos reais de alunos sobre a experiência
+              de treinar com a Fernanda.
+            </p>
+            <div className="mt-10 grid gap-5 md:grid-cols-3">
+              {[1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className="flex min-h-64 flex-col rounded-3xl border border-white/10 bg-white/3 p-8"
+                >
+                  <span aria-hidden="true" className="text-6xl leading-none text-brand">
+                    “
+                  </span>
+                  <p className="mt-3 leading-relaxed text-white/50">
+                    Depoimento a adicionar.
+                  </p>
+                  <p className="mt-auto pt-6 text-sm text-white/40">Nome do aluno</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
           id="galeria"
           aria-labelledby="titulo-galeria"
           className="section-anchor bg-white"
@@ -163,37 +198,23 @@ export default function Home() {
           </div>
         </section>
 
+
         <section
-          id="depoimentos"
+          id="planos"
           data-dark
-          aria-labelledby="titulo-depoimentos"
-          className="section-anchor bg-[#101312] text-white"
+          aria-labelledby="titulo-planos"
+          className="section-anchor flex min-h-[calc(100dvh-var(--navbar-height,0px))] items-center bg-[#101312] text-white"
         >
-          <div className="section-container">
-            <p className="eyebrow">Depoimentos</p>
-            <h2 id="titulo-depoimentos" className="section-title">
-              Quem treina, conta.
+          <div className="section-container w-full">
+            <p className="eyebrow">Planos</p>
+            <h2 id="titulo-planos" className="section-title">
+              Escolha como você quer treinar.
             </h2>
             <p className="mt-4 max-w-2xl leading-relaxed text-white/60">
-              Este espaço receberá relatos reais de alunos sobre a experiência
-              de treinar com a Fernanda.
+              Sozinho(a), em dupla ou em trio: treinando junto, o valor por
+              pessoa fica menor.
             </p>
-            <div className="mt-10 grid gap-5 md:grid-cols-3">
-              {[1, 2, 3].map((item) => (
-                <div
-                  key={item}
-                  className="rounded-2xl border border-white/10 bg-white/0.03 p-7"
-                >
-                  <span aria-hidden="true" className="text-4xl text-brand">
-                    “
-                  </span>
-                  <p className="mt-3 leading-relaxed text-white/50">
-                    Depoimento a adicionar.
-                  </p>
-                  <p className="mt-6 text-sm text-white/40">Nome do aluno</p>
-                </div>
-              ))}
-            </div>
+            <Planos />
           </div>
         </section>
 
@@ -203,9 +224,14 @@ export default function Home() {
           aria-labelledby="titulo-horarios"
           className="section-anchor relative isolate flex min-h-[calc(100dvh-var(--navbar-height,0px))] items-center overflow-hidden bg-[#101312] text-white"
         >
+          {/* Linha fina que separa Planos e Agenda; o brilho "nasce" dela */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -top-32 -right-32 -z-10 size-96 rounded-full bg-brand/15 blur-3xl"
+            className="pointer-events-none absolute inset-x-6 top-0 mx-auto h-px max-w-6xl bg-linear-to-r from-transparent via-brand/70 to-transparent"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-32 -right-32 -z-10 size-96 rounded-full bg-brand/15 blur-3xl lg:right-auto lg:left-1/2 lg:-top-96 lg:size-176 lg:-translate-x-1/2 lg:bg-brand/25"
           />
           <div className="section-container grid w-full items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
             <div>
@@ -231,7 +257,7 @@ export default function Home() {
                 ))}
               </ol>
             </div>
-            <div className="rounded-3xl border border-white/10 bg-white/3 p-4 backdrop-blur sm:p-6">
+            <div className="rounded-3xl border border-white/10 bg-[#171a19] p-4 sm:p-6">
               <Agenda />
             </div>
           </div>

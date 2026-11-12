@@ -14,8 +14,9 @@ const dados = {
 const navegacao = [
   { href: "#sobre-mim", label: "Sobre mim" },
   { href: "#mentoria", label: "Mentoria" },
-  { href: "#galeria", label: "Galeria" },
   { href: "#depoimentos", label: "Depoimentos" },
+  { href: "#galeria", label: "Galeria" },
+  { href: "#planos", label: "Planos" },
   { href: "#horarios", label: "Agendar horário" },
 ];
 
@@ -123,7 +124,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="text-white/85 transition-colors hover:text-brand"
                   >
-                    Enviar mensagem ↗
+                    Enviar mensagem
                   </a>
                 ) : (
                   <Valor />
