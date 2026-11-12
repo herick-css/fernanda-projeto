@@ -13,7 +13,7 @@ body {
   margin: 0;
 }
 
-/* Compensa a altura real do navbar em todas as âncoras. */
+/* Compensa a altura real do navbar em todas as âncorhttp://localhost:3000as. */
 .section-anchor {
   scroll-margin-top: var(--navbar-height, 0px);
 }
