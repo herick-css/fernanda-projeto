@@ -77,10 +77,7 @@ export default function Home() {
                   href="#horarios"
                   className="mt-8 inline-flex rounded-lg bg-brand px-6 py-3 font-bold text-black transition hover:bg-brand-light focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
                 >
-                  Consultar horários{" "}
-                  <span aria-hidden="true" className="ml-3">
-                    ↗
-                  </span>
+                  Consultar horários
                 </a>
               </div>
 
