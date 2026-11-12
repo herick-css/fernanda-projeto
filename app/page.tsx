@@ -157,9 +157,9 @@ export default function Home() {
         <section
           id="galeria"
           aria-labelledby="titulo-galeria"
-          className="section-anchor bg-white"
+          className="section-anchor flex min-h-[calc(100dvh-var(--navbar-height,0px))] items-center bg-white"
         >
-          <div className="section-container">
+          <div className="section-container w-full">
             <p className="eyebrow">Galeria</p>
             <h2 id="titulo-galeria" className="section-title">
               Histórias de evolução.

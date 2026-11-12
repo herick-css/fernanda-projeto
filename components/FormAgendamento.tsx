@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { aoEscolherPlano, planoAtual, type Grupo } from "@/lib/planoEscolhido";
 
 type Props = { horario: string; onVoltar: () => void };
 
@@ -12,7 +13,9 @@ export default function FormAgendamento({ horario, onVoltar }: Props) {
   const [sexo, setSexo] = useState<"Masculino" | "Feminino" | "">("");
   const [altura, setAltura] = useState("");
   const [peso, setPeso] = useState("");
-  const [grupo, setGrupo] = useState<"Sozinho(a)" | "Em dupla" | "Em trio" | "">("");
+  // Já vem marcado se a pessoa clicou em "Agendar com o plano X".
+  const [grupo, setGrupo] = useState<Grupo | "">(planoAtual);
+  useEffect(() => aoEscolherPlano(setGrupo), []);
   const [indicacao, setIndicacao] = useState("");
 
   function enviar(e: React.FormEvent) {

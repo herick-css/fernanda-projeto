@@ -37,9 +37,9 @@ export default function Footer() {
     <footer
       id="contato"
       aria-labelledby="titulo-contato"
-      className="section-anchor bg-black text-white"
+      className="section-anchor flex min-h-[calc(100dvh-var(--navbar-height,0px))] flex-col bg-black text-white"
     >
-      <div className="mx-auto max-w-6xl px-6 pt-16 pb-10 sm:pt-20">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pt-16 pb-10 sm:pt-20">
         {/* Chamada */}
         <div className="flex flex-col gap-6 border-b border-white/10 pb-12 md:flex-row md:items-end md:justify-between">
           <div>

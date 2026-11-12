@@ -1,22 +1,30 @@
+"use client";
+
+import { useState } from "react";
+import { escolherPlano, type Grupo } from "@/lib/planoEscolhido";
+
 // Configure os planos aqui.
 // - preco: deixe "" para mostrar "Valor a definir" (ex.: "R$ 250")
 // - desconto: aparece como selo quando preenchido (ex.: "15% off por pessoa")
-// - destaque: deixa o card em evidência; selo é o texto que aparece em cima dele
+// - grupo: opção que já vem marcada no formulário ao clicar no botão do plano
+// - selo: texto que fica sempre em cima do card (ex.: "Melhor custo-benefício")
+// Todos os cards começam iguais; o destaque aparece ao passar o mouse ou clicar.
 type Plano = {
   nome: string;
+  grupo: Grupo;
   pessoas: string;
   frase: string;
   preco: string;
   periodo: string;
   desconto: string;
   itens: string[];
-  destaque?: boolean;
   selo?: string;
 };
 
 const planos: Plano[] = [
   {
     nome: "Solo",
+    grupo: "Sozinho(a)",
     pessoas: "1 pessoa",
     frase: "Atenção total em você, do aquecimento ao último exercício.",
     preco: "",
@@ -30,6 +38,7 @@ const planos: Plano[] = [
   },
   {
     nome: "Dupla",
+    grupo: "Em dupla",
     pessoas: "2 pessoas",
     frase: "Treine com quem te motiva e pague menos por pessoa.",
     preco: "",
@@ -40,11 +49,11 @@ const planos: Plano[] = [
       "Sessões em conjunto com quem você escolher",
       "Desconto no valor por pessoa",
     ],
-    destaque: true,
     selo: "Melhor custo-benefício",
   },
   {
     nome: "Trio",
+    grupo: "Em trio",
     pessoas: "3 pessoas",
     frase: "Junte a turma: mais energia no treino e o maior desconto.",
     preco: "",
@@ -76,18 +85,19 @@ function Check() {
 }
 
 export default function Planos() {
+  // Card escolhido com clique/toque (no celular não existe hover).
+  const [ativo, setAtivo] = useState<string | null>(null);
+
   return (
-    <div className="mt-12 grid gap-5 md:grid-cols-3 md:items-stretch">
+    <div className="mt-12 grid gap-8 md:grid-cols-3 md:items-stretch">
       {planos.map((plano) => (
         <article
           key={plano.nome}
-          className={`relative flex flex-col rounded-3xl border p-7 ${
-            plano.destaque
-              ? "border-brand/60 bg-brand/[0.06] shadow-[0_0_60px_-20px_var(--color-brand)]"
-              : "border-white/10 bg-white/3"
-          }`}
+          data-ativo={ativo === plano.nome}
+          onClick={() => setAtivo(plano.nome)}
+          className="group relative flex cursor-pointer flex-col rounded-3xl border border-white/10 bg-white/3 p-7 transition-[translate,border-color,background-color,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:border-brand/60 hover:bg-brand/6 hover:shadow-[0_0_60px_-20px_var(--color-brand)] focus-within:border-brand/60 focus-within:bg-brand/6 data-[ativo=true]:-translate-y-1.5 data-[ativo=true]:border-brand/60 data-[ativo=true]:bg-brand/6 data-[ativo=true]:shadow-[0_0_60px_-20px_var(--color-brand)] motion-reduce:translate-y-0! motion-reduce:transition-none"
         >
-          {plano.destaque && plano.selo && (
+          {plano.selo && (
             <span className="absolute -top-3 left-7 rounded-full bg-brand px-3 py-1 text-xs font-bold text-black">
               {plano.selo}
             </span>
@@ -131,16 +141,13 @@ export default function Planos() {
           </ul>
 
           <div className="mt-auto pt-8">
-          <a
-            href="#horarios"
-            className={`block rounded-xl py-3 text-center font-bold transition ${
-              plano.destaque
-                ? "bg-brand text-black hover:bg-brand-light"
-                : "border border-white/15 text-white hover:border-brand hover:text-brand"
-            }`}
-          >
-            Agendar com o plano {plano.nome}
-          </a>
+            <a
+              href="#horarios"
+              onClick={() => escolherPlano(plano.grupo)}
+              className="block rounded-xl border border-white/15 py-3 text-center font-bold text-white transition-colors duration-300 group-hover:border-brand group-hover:bg-brand group-hover:text-black group-focus-within:border-brand group-focus-within:bg-brand group-focus-within:text-black group-data-[ativo=true]:border-brand group-data-[ativo=true]:bg-brand group-data-[ativo=true]:text-black hover:bg-brand-light!"
+            >
+              Agendar com o plano {plano.nome}
+            </a>
           </div>
         </article>
       ))}
