@@ -3,6 +3,10 @@
 // a partir do expediente abaixo menos o que estiver ocupado na agenda.
 
 export const config = {
+  // ID da agenda da Fernanda (Google Agenda > Configurações da agenda >
+  // "Integrar agenda" > "ID da agenda"). Não é segredo: só identifica a agenda.
+  // Quem consegue LER é apenas a conta de serviço com quem ela foi compartilhada.
+  calendarId: "fernandafeff3@gmail.com",
   timeZone: "America/Manaus",
   utcOffset: "-04:00", // Manaus não tem horário de verão
   diasAFrente: 14,

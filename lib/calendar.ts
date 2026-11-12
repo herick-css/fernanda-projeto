@@ -5,9 +5,12 @@ import { intervaloDaBusca, type Ocupado } from "./slots";
 // Lê só os intervalos "ocupados" (free/busy) — o site nunca vê título,
 // descrição ou nome de cliente dos eventos.
 export async function buscarOcupados(): Promise<Ocupado[]> {
-  const calendarId = process.env.GOOGLE_CALENDAR_ID;
-  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const calendarId = config.calendarId;
+  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL?.trim();
+  // Aceita a chave com \n literais e/ou entre aspas (como a Vercel costuma guardar).
+  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.trim()
+    .replace(/^["']|["']$/g, "")
+    .replace(/\\n/g, "\n");
 
   if (!calendarId || !clientEmail || !privateKey) {
     if (process.env.NODE_ENV === "production") {
@@ -36,7 +39,18 @@ export async function buscarOcupados(): Promise<Ocupado[]> {
     },
   });
 
-  const busy = res.data.calendars?.[calendarId]?.busy ?? [];
+  const resultado = res.data.calendars?.[calendarId];
+  // Sem isso, uma agenda não compartilhada/ID errado voltava "sem ocupados"
+  // e o site mostrava TUDO como livre, sem avisar.
+  if (resultado?.errors?.length) {
+    throw new Error(
+      `Google Calendar recusou a agenda (${resultado.errors
+        .map((e) => e.reason)
+        .join(", ")}). Confira o ID e se ela foi compartilhada com ${clientEmail}.`
+    );
+  }
+
+  const busy = resultado?.busy ?? [];
   return busy
     .filter((b): b is { start: string; end: string } => !!b.start && !!b.end)
     .map((b) => ({ start: b.start, end: b.end }));
